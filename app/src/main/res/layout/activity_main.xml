@@ -22,7 +22,7 @@
         app:layout_constraintVertical_bias="0.063" />
 
     <LinearLayout
-        android:id="@+id/button_control_layout"
+        android:id="@+id/control_layout"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -45,6 +45,7 @@
             android:id="@+id/pillow_1_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:text="Pillow 1"
             android:textSize="20sp" />
 
@@ -73,6 +74,7 @@
             android:id="@+id/pillow_2_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:text="Pillow 2"
             android:textSize="20sp" />
 
@@ -96,6 +98,80 @@
                 android:layout_weight="1"
                 android:text="Decrease" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/settings_label"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:text="Settings"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/pillow_1_nickname_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Pillow 1 Nickname"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/pillow_1_nickname_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Nickname for pillow 1"
+            android:inputType="textPersonName" />
+
+        <TextView
+            android:id="@+id/pillow_2_nickname_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Pillow 2 Nickname"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/pillow_2_nickname_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Nickname for pillow 2"
+            android:inputType="textPersonName" />
+
+        <TextView
+            android:id="@+id/pillow_1_inflate_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Pillow 1 Inflate Period (s)"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/pillow_1_inflate_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="How long the pillow will inflate for in seconds"
+            android:inputType="number"
+            android:numeric="integer" />
+
+        <TextView
+            android:id="@+id/pillow_2_inflate_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Pillow 2 Inflate Period (s)"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/pillow_2_inflate_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="How long the pillow will inflate for in seconds"
+            android:inputType="number"
+            android:numeric="integer" />
 
     </LinearLayout>
 
