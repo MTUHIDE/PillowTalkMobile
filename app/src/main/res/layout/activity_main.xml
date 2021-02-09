@@ -16,163 +16,191 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.063" />
+        app:layout_constraintVertical_bias="0.024" />
 
-    <LinearLayout
-        android:id="@+id/control_layout"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:showDividers="middle"
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/welcome_message"
-        app:layout_constraintVertical_bias="0.059">
-
-        <TextView
-            android:id="@+id/button_control_label"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:text="Button Control"
-            android:textSize="30sp" />
-
-        <TextView
-            android:id="@+id/pillow_1_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Pillow 1"
-            android:textSize="20sp" />
+        app:layout_constraintTop_toBottomOf="@+id/welcome_message">
 
         <LinearLayout
-            android:id="@+id/pillow_1_button_layout"
+            android:id="@+id/control_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:scrollbars="vertical"
+            android:showDividers="middle">
 
-            <Button
-                android:id="@+id/pillow_1_button_increase"
+            <TextView
+                android:id="@+id/button_control_label"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="Button Control"
+                android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/pillow_1_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Pillow 1"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:id="@+id/pillow_1_button_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Increase" />
+                android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/pillow_1_button_decrease"
+                <Button
+                    android:id="@+id/pillow_1_button_increase"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Increase" />
+
+                <Button
+                    android:id="@+id/pillow_1_button_decrease"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Decrease" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/pillow_2_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Pillow 2"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:id="@+id/pillow_2_button_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Decrease" />
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/pillow_2_button_increase"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Increase" />
+
+                <Button
+                    android:id="@+id/pillow_2_button_decrease"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Decrease" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/settings_label"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="20dp"
+                android:text="Settings"
+                android:textSize="30sp" />
+
+            <Switch
+                android:id="@+id/use_bluetooth_switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Connect via bluetooth" />
+
+            <TextView
+                android:id="@+id/server_ip_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Server IP Address"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/server_ip_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:digits="0123456789."
+                android:ems="10"
+                android:hint="e.g. 192.168.x.y"
+                android:inputType="number" />
+
+            <TextView
+                android:id="@+id/pillow_1_nickname_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Pillow 1 Nickname"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/pillow_1_nickname_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Nickname for pillow 1"
+                android:inputType="textPersonName" />
+
+            <TextView
+                android:id="@+id/pillow_2_nickname_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Pillow 2 Nickname"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/pillow_2_nickname_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Nickname for pillow 2"
+                android:inputType="textPersonName" />
+
+            <TextView
+                android:id="@+id/pillow_1_inflate_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Pillow 1 Inflate Period (s)"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/pillow_1_inflate_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="How long the pillow will inflate for in seconds"
+                android:inputType="number"
+                android:numeric="integer" />
+
+            <TextView
+                android:id="@+id/pillow_2_inflate_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Pillow 2 Inflate Period (s)"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/pillow_2_inflate_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="How long the pillow will inflate for in seconds"
+                android:inputType="number"
+                android:numeric="integer" />
+
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/pillow_2_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Pillow 2"
-            android:textSize="20sp" />
-
-        <LinearLayout
-            android:id="@+id/pillow_2_button_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/pillow_2_button_increase"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Increase" />
-
-            <Button
-                android:id="@+id/pillow_2_button_decrease"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Decrease" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/settings_label"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="20dp"
-            android:text="Settings"
-            android:textSize="30sp" />
-
-        <TextView
-            android:id="@+id/pillow_1_nickname_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Pillow 1 Nickname"
-            android:textSize="20sp" />
-
-        <EditText
-            android:id="@+id/pillow_1_nickname_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Nickname for pillow 1"
-            android:inputType="textPersonName" />
-
-        <TextView
-            android:id="@+id/pillow_2_nickname_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Pillow 2 Nickname"
-            android:textSize="20sp" />
-
-        <EditText
-            android:id="@+id/pillow_2_nickname_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Nickname for pillow 2"
-            android:inputType="textPersonName" />
-
-        <TextView
-            android:id="@+id/pillow_1_inflate_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Pillow 1 Inflate Period (s)"
-            android:textSize="20sp" />
-
-        <EditText
-            android:id="@+id/pillow_1_inflate_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="How long the pillow will inflate for in seconds"
-            android:inputType="number"
-            android:numeric="integer" />
-
-        <TextView
-            android:id="@+id/pillow_2_inflate_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Pillow 2 Inflate Period (s)"
-            android:textSize="20sp" />
-
-        <EditText
-            android:id="@+id/pillow_2_inflate_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="How long the pillow will inflate for in seconds"
-            android:inputType="number"
-            android:numeric="integer" />
-
-    </LinearLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
