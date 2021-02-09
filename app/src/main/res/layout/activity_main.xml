@@ -167,36 +167,36 @@
                 android:inputType="textPersonName" />
 
             <TextView
-                android:id="@+id/pillow_1_inflate_label"
+                android:id="@+id/pillow_1_pressure_interval_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="Pillow 1 Inflate Period (s)"
+                android:text="Pillow 1 Pressure Interval (s)"
                 android:textSize="20sp" />
 
             <EditText
-                android:id="@+id/pillow_1_inflate_text"
+                android:id="@+id/pillow_1_pressure_interval_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="How long the pillow will inflate for in seconds"
+                android:hint="How long the pillow will inflate/deflate for in seconds"
                 android:inputType="number"
                 android:numeric="integer" />
 
             <TextView
-                android:id="@+id/pillow_2_inflate_label"
+                android:id="@+id/pillow_2_pressure_interval_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="Pillow 2 Inflate Period (s)"
+                android:text="Pillow 2 Pressure Interval (s)"
                 android:textSize="20sp" />
 
             <EditText
-                android:id="@+id/pillow_2_inflate_text"
+                android:id="@+id/pillow_2_pressure_interval_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="How long the pillow will inflate for in seconds"
+                android:hint="How long the pillow will inflate/deflate for in seconds"
                 android:inputType="number"
                 android:numeric="integer" />
 
