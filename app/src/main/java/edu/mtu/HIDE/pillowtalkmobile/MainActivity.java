@@ -3,6 +3,8 @@ package edu.mtu.HIDE.pillowtalkmobile;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -19,19 +21,26 @@ public class MainActivity extends AppCompatActivity {
 
         //UI references
         Switch bluetoothSwitch = findViewById(R.id.use_bluetooth_switch);
+
         final EditText serverIPEditText = findViewById(R.id.server_ip_text);
+
         EditText button1NicknameEditText = findViewById(R.id.pillow_1_nickname_text);
         EditText button2NicknameEditText = findViewById(R.id.pillow_2_nickname_text);
+
         EditText button1InflateEditText = findViewById(R.id.pillow_1_pressure_interval_text);
         EditText button2InflateEditText = findViewById(R.id.pillow_2_pressure_interval_text);
 
         //Set user settings
         final UserSettings settings = new UserSettings(this);
+
         bluetoothSwitch.setChecked(settings.getUseBluetooth());
+
         serverIPEditText.setEnabled(!settings.getUseBluetooth()); //disable if using bluetooth
         serverIPEditText.setText(settings.getIPAddress());
+
         button1NicknameEditText.setText(settings.getPillow1Nickname());
         button2NicknameEditText.setText(settings.getPillow2Nickname());
+
         button1InflateEditText.setText(String.valueOf(settings.getPillow1PressureInterval()));
         button2InflateEditText.setText(String.valueOf(settings.getPillow2PressureInterval()));
 
@@ -44,43 +53,46 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        serverIPEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        serverIPEditText.addTextChangedListener(new TextChangedListener<EditText>(serverIPEditText) {
             @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                settings.setIPAddress(textView.getText().toString());
-                return false;
+            public void onTextChanged(EditText target, Editable s) {
+                settings.setIPAddress(target.getText().toString());
             }
         });
 
-        button1NicknameEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        button1NicknameEditText.addTextChangedListener(new TextChangedListener<EditText>(button1NicknameEditText) {
             @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                settings.setPillow1Nickname(textView.getText().toString());
-                return false;
+            public void onTextChanged(EditText target, Editable s) {
+                String newValue = target.getText().toString();
+                if (!newValue.isEmpty()) settings.setPillow1Nickname(newValue);
+                else settings.setPillow1Nickname("Pillow 1");
             }
         });
 
-        button2NicknameEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        button2NicknameEditText.addTextChangedListener(new TextChangedListener<EditText>(button2NicknameEditText) {
             @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                settings.setPillow2Nickname(textView.getText().toString());
-                return false;
+            public void onTextChanged(EditText target, Editable s) {
+                String newValue = target.getText().toString();
+                if (!newValue.isEmpty()) settings.setPillow2Nickname(newValue);
+                else settings.setPillow2Nickname("Pillow 2");
             }
         });
 
-        button1InflateEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        button1InflateEditText.addTextChangedListener(new TextChangedListener<EditText>(button1InflateEditText) {
             @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                settings.setPillow1PressureInterval(Integer.parseInt(textView.getText().toString()));
-                return false;
+            public void onTextChanged(EditText target, Editable s) {
+                String newValue = target.getText().toString();
+                if (!newValue.isEmpty()) settings.setPillow1PressureInterval(Integer.parseInt(newValue));
+                else settings.setPillow1PressureInterval(1);
             }
         });
 
-        button2InflateEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        button2InflateEditText.addTextChangedListener(new TextChangedListener<EditText>(button2InflateEditText) {
             @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                settings.setPillow2PressureInterval(Integer.parseInt(textView.getText().toString()));
-                return false;
+            public void onTextChanged(EditText target, Editable s) {
+                String newValue = target.getText().toString();
+                if (!newValue.isEmpty()) settings.setPillow2PressureInterval(Integer.parseInt(newValue));
+                else settings.setPillow2PressureInterval(1);
             }
         });
 
