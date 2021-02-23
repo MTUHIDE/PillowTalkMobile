@@ -10,8 +10,13 @@ public class UserSettings {
     private final static String useBluetoothKey = "use_bluetooth_key";
     private final static String pillow1NicknameKey = "pillow_1_nickname_key";
     private final static String pillow2NicknameKey = "pillow_2_nickname_key";
-    private final static String pillow1PressureKey = "pillow_1_inflate_key";
-    private final static String pillow2PressureKey = "pillow_2_inflate_key";
+
+    private final static String pillow1LowPressureKey = "pillow_1_low_pressure_key";
+    private final static String pillow2LowPressureKey = "pillow_2_low_pressure_key";
+    private final static String pillow1MediumPressureKey = "pillow_1_medium_pressure_key";
+    private final static String pillow2MediumPressureKey = "pillow_2_medium_pressure_key";
+    private final static String pillow1HighPressureKey = "pillow_1_high_pressure_key";
+    private final static String pillow2HighPressureKey = "pillow_2_high_pressure_key";
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
@@ -58,21 +63,57 @@ public class UserSettings {
         editor.commit();
     }
 
-    public int getPillow1PressureInterval() {
-        return sharedPreferences.getInt(pillow1PressureKey, 1);
+    public int getPillow1LowPressureInterval() {
+        return sharedPreferences.getInt(pillow1LowPressureKey, 1);
     }
 
-    public void setPillow1PressureInterval(int seconds) {
-        editor.putInt(pillow1PressureKey, seconds);
+    public void setPillow1LowPressureInterval(int seconds) {
+        editor.putInt(pillow1LowPressureKey, seconds);
         editor.commit();
     }
 
-    public int getPillow2PressureInterval() {
-        return sharedPreferences.getInt(pillow2PressureKey, 1);
+    public int getPillow1MediumPressureInterval() {
+        return sharedPreferences.getInt(pillow1MediumPressureKey, 2);
     }
 
-    public void setPillow2PressureInterval(int seconds) {
-        editor.putInt(pillow2PressureKey, seconds);
+    public void setPillow1MediumPressureInterval(int seconds) {
+        editor.putInt(pillow1MediumPressureKey, seconds);
+        editor.commit();
+    }
+
+    public int getPillow1HighPressureInterval() {
+        return sharedPreferences.getInt(pillow1HighPressureKey, 3);
+    }
+
+    public void setPillow1HighPressureInterval(int seconds) {
+        editor.putInt(pillow1HighPressureKey, seconds);
+        editor.commit();
+    }
+
+    public int getPillow2LowPressureInterval() {
+        return sharedPreferences.getInt(pillow2LowPressureKey, 1);
+    }
+
+    public void setPillow2LowPressureInterval(int seconds) {
+        editor.putInt(pillow2LowPressureKey, seconds);
+        editor.commit();
+    }
+
+    public int getPillow2MediumPressureInterval() {
+        return sharedPreferences.getInt(pillow2MediumPressureKey, 2);
+    }
+
+    public void setPillow2MediumPressureInterval(int seconds) {
+        editor.putInt(pillow2MediumPressureKey, seconds);
+        editor.commit();
+    }
+
+    public int getPillow2HighPressureInterval() {
+        return sharedPreferences.getInt(pillow2HighPressureKey, 3);
+    }
+
+    public void setPillow2HighPressureInterval(int seconds) {
+        editor.putInt(pillow2HighPressureKey, seconds);
         editor.commit();
     }
 
