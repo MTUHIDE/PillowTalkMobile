@@ -11,12 +11,22 @@ import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
+import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
+import java.net.URL;
 
-public class MainActivity extends AppCompatActivity {
+import static java.lang.Thread.sleep;
 
-    //global UI references
+public class MainActivity extends AppCompatActivity implements AsyncResponse {
+
+    //UI references
     private TextView serverStatusLabel;
     private Button pillow1InflateButton;
     private Button pillow1DeflateButton;
@@ -34,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Initialize UI references
+        //initialize UI references
         serverStatusLabel = findViewById(R.id.network_status_label);
 
         Switch bluetoothSwitch = findViewById(R.id.use_bluetooth_switch);
@@ -94,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(EditText target, Editable s) {
                 settings.setIPAddress(target.getText().toString());
-                //testHttpsServerConnectivity(settings.getIPAddress()); //retest connection
+                testHttpsServerConnectivity(settings.getIPAddress()); //retest connection
             }
         });
 
@@ -171,36 +181,23 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //Run functions
-        //testHttpsServerConnectivity(settings.getIPAddress());
+        testHttpsServerConnectivity(settings.getIPAddress());
 
     }
 
     private void testHttpsServerConnectivity(String ip)
     {
-        try
-        {
-            InetAddress address1 = InetAddress.getByName(ip + ":443");
-            InetAddress address2 = InetAddress.getByName(ip + ":4433");
+        String address1 = "https://" + ip + ":443/server_connection_test"; //external
+        //URL address1 = new URL("https://httpbin.org/get"); //external
+        //URL address2 = new URL(ip + ":4433");
+        //"https://www.onlinefreeconverter.com/random-words?n=15"
 
-            serverStatusLabel.setText("Server Status: trying to connect...");
+        serverStatusLabel.setText("Server Status: Trying to Connect");
 
-            if (address1.isReachable(5000) || address2.isReachable(5000))
-            {
-                serverStatusLabel.setText("Server Status: connected!");
-                enableButtonControl();
-            }
-            else
-            {
-                serverStatusLabel.setText("Server Status: failed to connect");
-                disableButtonControl();
-            }
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-
-
+        //must initialize new instance of task
+        TestServerConnectionTask testServerConnectionTask = new TestServerConnectionTask();
+        testServerConnectionTask.delegate = this;
+        testServerConnectionTask.execute(address1);
     }
 
     void enableButtonControl()
@@ -233,4 +230,18 @@ public class MainActivity extends AppCompatActivity {
         pillow2PresetHigh.setEnabled(false);
     }
 
+    @Override
+    public void testServerConnectionTaskResponse(String results) {
+        //200 = Good HTTPS response code
+        if (results.equals("200"))
+        {
+            serverStatusLabel.setText("Server Status: Connected");
+            enableButtonControl();
+        }
+        else
+        {
+            serverStatusLabel.setText("Server Status: Failed to Connect");
+            disableButtonControl();
+        }
+    }
 }
