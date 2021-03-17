@@ -258,29 +258,34 @@ public class BluetoothService {
             while (mState != STATE_CONNECTED) {
                 try {
                     socket = mmServerSocket.accept();
+                    if (socket != null) {
+                        synchronized (BluetoothService.this) {
+                            switch (mState) {
+                                case STATE_LISTEN:
+                                    // Situation normal. Start the connected thread.
+                                    Log.d(TAG,"state: STATE_LISTEN ");
+                                    connected(socket);
+                                    break;
+                                case STATE_CONNECTING:
+                                    Log.d(TAG,"state: STATE_CONNECTING ");
+                                    break;
+                                case STATE_NONE:
+                                    Log.d(TAG,"state: STATE_NONE ");
+                                    break;
+                                case STATE_CONNECTED:
+                                    // Either not ready or already connected. Terminate new socket.
+                                    Log.d(TAG,"state: STATE_CONNECTED ");
+                                    try {
+                                        socket.close();
+                                    } catch (IOException e) {
+                                        Log.e(TAG, "Could not close unwanted socket", e);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
                 } catch (IOException e) {
                     Log.e(TAG, "AcceptThread: accept() failed", e);
-                }
-            }
-
-            if (socket != null) {
-                synchronized (BluetoothService.this) {
-                    switch (mState) {
-                        case STATE_LISTEN:
-                        case STATE_CONNECTING:
-                            // Situation normal. Start the connected thread.
-                            connected(socket);
-                            break;
-                        case STATE_NONE:
-                        case STATE_CONNECTED:
-                            // Either not ready or already connected. Terminate new socket.
-                            try {
-                                socket.close();
-                            } catch (IOException e) {
-                                Log.e(TAG, "Could not close unwanted socket", e);
-                            }
-                            break;
-                    }
                 }
             }
         }
