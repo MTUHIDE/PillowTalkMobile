@@ -1,6 +1,6 @@
 package edu.mtu.HIDE.pillowtalkmobile;
 
-public interface AsyncResponse {
+public interface TestServerConnectionAsyncResponse {
 
     void testServerConnectionTaskResponse(String results);
 

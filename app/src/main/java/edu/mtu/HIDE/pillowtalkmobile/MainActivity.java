@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.text.Editable;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -11,20 +12,9 @@ import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import org.json.JSONObject;
-
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
-import java.net.URL;
-
 import static java.lang.Thread.sleep;
 
-public class MainActivity extends AppCompatActivity implements AsyncResponse {
+public class MainActivity extends AppCompatActivity implements TestServerConnectionAsyncResponse {
 
     //UI references
     private TextView serverStatusLabel;
@@ -182,17 +172,18 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
         //Run functions
         testHttpsServerConnectivity(settings.getIPAddress());
-
     }
 
     private void testHttpsServerConnectivity(String ip)
     {
-        String address1 = "https://" + ip + ":443/server_connection_test"; //external
-        //URL address1 = new URL("https://httpbin.org/get"); //external
-        //URL address2 = new URL(ip + ":4433");
-        //"https://www.onlinefreeconverter.com/random-words?n=15"
+        disableButtonControl();
+
+        if (ip.isEmpty()) return;
 
         serverStatusLabel.setText("Server Status: Trying to Connect");
+
+        String address1 = "http://" + ip + ":443/server_connection_test"; //external
+        Log.d("TESTING", "Trying: " + address1);
 
         //must initialize new instance of task
         TestServerConnectionTask testServerConnectionTask = new TestServerConnectionTask();
@@ -233,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
     @Override
     public void testServerConnectionTaskResponse(String results) {
         //200 = Good HTTPS response code
-        if (results.equals("200"))
+        if (results.equals("200 OK"))
         {
             serverStatusLabel.setText("Server Status: Connected");
             enableButtonControl();

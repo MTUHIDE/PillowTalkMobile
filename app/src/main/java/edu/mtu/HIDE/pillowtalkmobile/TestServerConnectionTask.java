@@ -2,37 +2,33 @@ package edu.mtu.HIDE.pillowtalkmobile;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import javax.net.ssl.HttpsURLConnection;
 
-import static edu.mtu.HIDE.pillowtalkmobile.HTTPSManager.getHttpsClient;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class TestServerConnectionTask extends AsyncTask<String, Integer, String> {
 
-    AsyncResponse delegate = null;
+    TestServerConnectionAsyncResponse delegate = null;
 
     protected String doInBackground(String... urls) {
         try
         {
-            Log.d("TESTING",  "hi");
-            HttpsURLConnection client = getHttpsClient(urls[0]);
-            if  (client.getResponseMessage() != null) Log.d("TESTING",  "asdasd");
-            int responseCode = client.getResponseCode();
+            //URL url = new URL("http://47.6.26.69:443/server_connection_test");
+            URL url = new URL(urls[0]);
+            HttpURLConnection http = (HttpURLConnection)url.openConnection();
+            http.setConnectTimeout(5000);
 
-            //Log.d("TESTING: ", "" + client.getResponseCode() == null);
-
-            return "" + responseCode;
+            return http.getResponseCode() + " " + http.getResponseMessage();
         }
         catch (Exception e)
         {
-            e.printStackTrace();
-            Log.d("TESTING EXCEPTION", e.getMessage());
+            Log.d("TESTING", "failed at doInBackground: " + e.getMessage());
         }
 
         return "TestServerConnectionTask failed";
     }
 
-    protected void onProgressUpdate(Integer... progress) {
-    }
+    protected void onProgressUpdate(Integer... progress) { }
 
     protected void onPostExecute(String result) {
         // this is executed on the main thread after the process is over
