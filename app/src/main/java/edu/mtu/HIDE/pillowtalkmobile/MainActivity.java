@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -14,7 +15,7 @@ import android.widget.TextView;
 
 import static java.lang.Thread.sleep;
 
-public class MainActivity extends AppCompatActivity implements TestServerConnectionAsyncResponse {
+public class MainActivity extends AppCompatActivity implements TestServerConnectionAsyncResponse, POSTRequestAsyncResponse {
 
     //UI references
     private TextView serverStatusLabel;
@@ -80,6 +81,98 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         pillow2MediumInflateEditText.setText(String.valueOf(settings.getPillow2MediumPressureInterval()));
         pillow1HighInflateEditText.setText(String.valueOf(settings.getPillow1HighPressureInterval()));
         pillow2HighInflateEditText.setText(String.valueOf(settings.getPillow2HighPressureInterval()));
+
+        pillow1InflateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int interval = 0;
+                if (pillow1PresetLow.isChecked())
+                {
+                    interval = settings.getPillow1LowPressureInterval();
+                }
+                else if (pillow1PresetMedium.isChecked())
+                {
+                    interval = settings.getPillow1MediumPressureInterval();
+                }
+                else if (pillow1PresetHigh.isChecked())
+                {
+                    interval = settings.getPillow1HighPressureInterval();
+                }
+
+                String command = buildPOSTRequestCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_1);
+
+                sendPOSTRequest(settings.getIPAddress(), command);
+            }
+        });
+
+        pillow1DeflateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int interval = 0;
+                if (pillow1PresetLow.isChecked())
+                {
+                    interval = settings.getPillow1LowPressureInterval();
+                }
+                else if (pillow1PresetMedium.isChecked())
+                {
+                    interval = settings.getPillow1MediumPressureInterval();
+                }
+                else if (pillow1PresetHigh.isChecked())
+                {
+                    interval = settings.getPillow1HighPressureInterval();
+                }
+
+                String command = buildPOSTRequestCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_1);
+
+                sendPOSTRequest(settings.getIPAddress(), command);
+            }
+        });
+
+        pillow2InflateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int interval = 0;
+                if (pillow2PresetLow.isChecked())
+                {
+                    interval = settings.getPillow2LowPressureInterval();
+                }
+                else if (pillow2PresetMedium.isChecked())
+                {
+                    interval = settings.getPillow2MediumPressureInterval();
+                }
+                else if (pillow2PresetHigh.isChecked())
+                {
+                    interval = settings.getPillow2HighPressureInterval();
+                }
+
+                String command = buildPOSTRequestCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_2);
+
+                sendPOSTRequest(settings.getIPAddress(), command);
+            }
+        });
+
+        pillow2DeflateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int interval = 0;
+                if (pillow2PresetLow.isChecked())
+                {
+                    interval = settings.getPillow2LowPressureInterval();
+                }
+                else if (pillow2PresetMedium.isChecked())
+                {
+                    interval = settings.getPillow2MediumPressureInterval();
+                }
+                else if (pillow2PresetHigh.isChecked())
+                {
+                    interval = settings.getPillow2HighPressureInterval();
+                }
+
+                String command = buildPOSTRequestCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_2);
+
+                sendPOSTRequest(settings.getIPAddress(), command);
+            }
+        });
 
         //Add UI listeners
         bluetoothSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -174,6 +267,30 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         testHttpsServerConnectivity(settings.getIPAddress());
     }
 
+    private void sendPOSTRequest(String ip, String command)
+    {
+        disableButtonControl();
+
+        if (ip.isEmpty()) return;
+
+        serverStatusLabel.setText("Server Status: Trying to send command");
+
+        String address = "http://" + ip + ":443/command";
+        Log.d("TESTING",  "Trying: " + address);
+
+        POSTRequestTask postRequestTask = new POSTRequestTask();
+        postRequestTask.delegate = this;
+        postRequestTask.execute(address, command);
+    }
+
+    private String buildPOSTRequestCommand(PillowBaseCommand base, String baseParameter, PillowID pillowID)
+    {
+        //example: base = inflate, baseParameter = 5 (secs) ,  pillowID  = cushion_1
+        //expected format = "command=inflate%20cushion_1%206"
+
+        return "command=" + base + "%20" + pillowID + "%20" + baseParameter;
+    }
+
     private void testHttpsServerConnectivity(String ip)
     {
         disableButtonControl();
@@ -227,6 +344,21 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         if (results.equals("200 OK"))
         {
             serverStatusLabel.setText("Server Status: Connected");
+            enableButtonControl();
+        }
+        else
+        {
+            serverStatusLabel.setText("Server Status: Failed to Connect");
+            disableButtonControl();
+        }
+    }
+
+    @Override
+    public void POSTRequestTaskResponse(String results) {
+        //200 = Good HTTPS response code
+        if (results.equals("200 OK"))
+        {
+            serverStatusLabel.setText("Server Status: Command Executed");
             enableButtonControl();
         }
         else

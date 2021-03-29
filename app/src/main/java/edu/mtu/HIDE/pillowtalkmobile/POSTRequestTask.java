@@ -15,18 +15,19 @@ public class POSTRequestTask extends AsyncTask<String, Integer, String> {
     protected String doInBackground(String... postData) {
         try
         {
-            //Url url = new URL(postData[0]);
-            //String data = postData[1];
+            URL url = new URL(postData[0]);
+            String command = postData[1];
 
-            URL url = new URL("http://47.6.26.69:443/command");
+            //URL url = new URL("http://47.6.26.69:443/command");
 
             HttpURLConnection http = (HttpURLConnection)url.openConnection();
             http.setRequestMethod("POST");
             http.setDoOutput(true);
+            http.setConnectTimeout(5000);
             http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
-            String data = "command=inflate%20cushion_1%206";
-            byte[] out = data.getBytes(StandardCharsets.UTF_8);
+            //String data = "command=inflate%20cushion_1%206";
+            byte[] out = command.getBytes(StandardCharsets.UTF_8);
 
             OutputStream stream = http.getOutputStream();
             stream.write(out);
@@ -38,7 +39,7 @@ public class POSTRequestTask extends AsyncTask<String, Integer, String> {
             Log.d("TESTING", "failed at doInBackground: " + e.getMessage());
         }
 
-        return "TestServerConnectionTask failed";
+        return "POSTRequestTask failed";
     }
 
     protected void onProgressUpdate(Integer... progress) { }
