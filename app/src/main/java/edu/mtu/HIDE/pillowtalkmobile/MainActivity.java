@@ -2,6 +2,7 @@ package edu.mtu.HIDE.pillowtalkmobile;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
@@ -16,6 +17,11 @@ import android.widget.TextView;
 import static java.lang.Thread.sleep;
 
 public class MainActivity extends AppCompatActivity implements TestServerConnectionAsyncResponse, POSTRequestAsyncResponse {
+
+    private static final String BLUETOOTH_DEVICE = "pi";
+
+    //global references
+    BluetoothService bluetoothService;
 
     //UI references
     private TextView serverStatusLabel;
@@ -35,10 +41,13 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //global references
+        bluetoothService = new BluetoothService(this);
+
         //initialize UI references
         serverStatusLabel = findViewById(R.id.network_status_label);
 
-        Switch bluetoothSwitch = findViewById(R.id.use_bluetooth_switch);
+        final Switch bluetoothSwitch = findViewById(R.id.use_bluetooth_switch);
 
         final EditText serverIPEditText = findViewById(R.id.server_ip_text);
 
@@ -178,8 +187,26 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         bluetoothSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                settings.setUseBluetooth(b);
-                serverIPEditText.setEnabled(!settings.getUseBluetooth()); //disable if using bluetooth
+                BluetoothDevice bluetoothDevice = bluetoothService.findDevice(BLUETOOTH_DEVICE);
+                if (bluetoothDevice != null)
+                {
+                    settings.setUseBluetooth(b);
+                    serverIPEditText.setEnabled(!settings.getUseBluetooth()); //disable if using bluetooth
+
+                    bluetoothService.enableBluetooth();
+                    bluetoothService.connect(bluetoothDevice);
+                    Log.d("TESTING", "mainactivity getting bluetooth state: " + bluetoothService.getState());
+                }
+                else
+                {
+                    bluetoothSwitch.setChecked(false);
+                    settings.setUseBluetooth(false);
+                    serverIPEditText.setEnabled(true);
+
+                    Log.d("TESTING", "MainActivity - Bluetooth device not found");
+                    serverStatusLabel.setText("Server Status: Bluetooth device not found");
+                }
+
             }
         });
 

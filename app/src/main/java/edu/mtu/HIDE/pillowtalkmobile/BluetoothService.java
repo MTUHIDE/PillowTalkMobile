@@ -18,10 +18,12 @@ import java.util.Set;
 import java.util.UUID;
 
 public class BluetoothService {
+
     public static final int STATE_NONE = 0;
     public static final int STATE_LISTEN = 1;
     public static final int STATE_CONNECTING = 2;
     public static final int STATE_CONNECTED = 3;
+
     private static final String TAG = "BluetoothService";
     private final static UUID PILLOWTALK_UUID = UUID.fromString("79bf39f7-54a4-4015-b27e-0b4be44b506d");
     private final BluetoothAdapter bluetoothAdapter;
@@ -60,6 +62,7 @@ public class BluetoothService {
     public BluetoothService(Context c) {
         mContext = c;
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        Log.d("TESTING", "BluetoothService Const - " + bluetoothAdapter);
         mState = STATE_NONE;
     }
 
@@ -101,16 +104,25 @@ public class BluetoothService {
      */
     public BluetoothDevice findDevice(String name) {
         Log.d(TAG, "findDevice: getting bonded devices");
-        Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
 
-        Log.d(TAG, "findDevice: searching for device with name \"" + name + "\"");
-        for (BluetoothDevice bluetoothDevice : devices) {
-            if (bluetoothDevice.getName().equals(name)) {
-                Log.d(TAG, "findDevice: found device with address " + bluetoothDevice.getAddress());
-                return bluetoothDevice;
+        if (bluetoothAdapter != null)
+        {
+            Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
+
+            Log.d(TAG, "findDevice: searching for device with name \"" + name + "\"");
+            for (BluetoothDevice bluetoothDevice : devices) {
+                if (bluetoothDevice.getName().equals(name)) {
+                    Log.d(TAG, "findDevice: found device with address " + bluetoothDevice.getAddress());
+                    return bluetoothDevice;
+                }
             }
+            Log.d(TAG, "findDevice: no device with name \"" + name + "\" found");
         }
-        Log.d(TAG, "findDevice: no device with name \"" + name + "\" found");
+        else
+        {
+            Log.d(TAG, "findDevice() - bluetooth adapter not found");
+        }
+
         return null;
     }
 
@@ -121,6 +133,7 @@ public class BluetoothService {
     public synchronized void connect(BluetoothDevice bluetoothDevice) {
         if (bluetoothDevice != null) {
             // Cancel any thread attempting to make a connection
+
             if (mState == STATE_CONNECTING) {
                 if (mConnectThread != null) {
                     mConnectThread.cancel();
@@ -133,7 +146,6 @@ public class BluetoothService {
                 mConnectedThread.cancel();
                 mConnectedThread = null;
             }
-
 
             ConnectThread mConnectThread = new ConnectThread(bluetoothDevice);
             mConnectThread.start();
