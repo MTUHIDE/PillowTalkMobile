@@ -43,6 +43,17 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
 
         //global references
         bluetoothService = new BluetoothService(this);
+        bluetoothService.addListener(new BluetoothService.BluetoothServiceEventListener() {
+            @Override
+            public void onStateChange() {
+                int newState = bluetoothService.getState();
+                switch (newState) {
+                    case BluetoothService.STATE_CONNECTED:
+                        serverStatusLabel.setText("Bluetooth Status: Connected");
+                        break;
+                }
+            }
+        });
 
         //initialize UI references
         serverStatusLabel = findViewById(R.id.network_status_label);

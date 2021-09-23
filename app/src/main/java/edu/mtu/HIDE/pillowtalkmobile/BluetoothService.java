@@ -14,10 +14,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 public class BluetoothService {
+
+    private final List<BluetoothServiceEventListener> listeners = new ArrayList<BluetoothServiceEventListener>();
+
+    public interface BluetoothServiceEventListener
+    {
+        void onStateChange();
+    }
+
+    public void addListener(BluetoothServiceEventListener toAdd) {
+        listeners.add(toAdd);
+    }
 
     public static final int STATE_NONE = 0;
     public static final int STATE_LISTEN = 1;
@@ -71,6 +84,18 @@ public class BluetoothService {
      */
     public synchronized int getState() {
         return mState;
+    }
+
+    /**
+     * Sets the mState
+     * only send valid states
+     * @param state
+     */
+    private void setState(int state) {
+        mState = state;
+        for (BluetoothServiceEventListener bluetoothServiceEventListener : listeners) {
+            bluetoothServiceEventListener.onStateChange();
+        }
     }
 
     /**
@@ -220,7 +245,7 @@ public class BluetoothService {
             mAcceptThread.cancel();
             mAcceptThread = null;
         }
-        mState = STATE_NONE;
+        setState(STATE_NONE);
     }
 
     public synchronized void connected(BluetoothSocket socket) {
@@ -262,7 +287,7 @@ public class BluetoothService {
                 Log.e(TAG, "AcceptThread: listen() failed", e);
             }
             mmServerSocket = tmp;
-            mState = STATE_LISTEN;
+            setState(STATE_LISTEN);
         }
 
         public void run() {
@@ -326,7 +351,7 @@ public class BluetoothService {
                 Log.e(TAG, "ConnectThread: connection failed", e);
             }
             mmSocket = tmp;
-            mState = STATE_CONNECTING;
+            setState(STATE_CONNECTING);
         }
 
         public void run() {
@@ -345,7 +370,7 @@ public class BluetoothService {
                 } catch (IOException closeException) {
                     Log.e(TAG, "ConnectThread: Could not close the client socket", closeException);
                 }
-                mState = STATE_NONE;
+                setState(STATE_NONE);
                 return;
             }
 
@@ -387,7 +412,7 @@ public class BluetoothService {
 
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
-            mState = STATE_CONNECTED;
+            setState(STATE_CONNECTED);
         }
 
         public void run() {
@@ -403,7 +428,7 @@ public class BluetoothService {
                     Log.d(TAG, "InputStream: " + incomingMessage);
                 } catch (IOException e) {
                     Log.d(TAG, "Input stream was disconnected", e);
-                    mState = STATE_NONE;
+                    setState(STATE_NONE);
                     break;
                 }
             }
