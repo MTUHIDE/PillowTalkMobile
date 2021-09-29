@@ -43,14 +43,6 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
 
         //global references
         bluetoothService = new BluetoothService(this);
-        bluetoothService.addListener(() -> runOnUiThread(() -> {
-            int newState = bluetoothService.getState();
-            switch (newState) {
-                case BluetoothService.STATE_CONNECTED:
-                    serverStatusLabel.setText("Bluetooth Status: Connected");
-                    break;
-            }
-        }));
 
         //initialize UI references
         serverStatusLabel = findViewById(R.id.network_status_label);
@@ -98,6 +90,22 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         pillow2MediumInflateEditText.setText(String.valueOf(settings.getPillow2MediumPressureInterval()));
         pillow1HighInflateEditText.setText(String.valueOf(settings.getPillow1HighPressureInterval()));
         pillow2HighInflateEditText.setText(String.valueOf(settings.getPillow2HighPressureInterval()));
+
+
+        bluetoothService.addListener(() -> runOnUiThread(() -> {
+            int newState = bluetoothService.getState();
+            switch (newState) {
+                case BluetoothService.STATE_CONNECTED:
+                    serverStatusLabel.setText("Bluetooth Status: Connected");
+                    enableButtonControl();
+                    break;
+                case BluetoothService.STATE_NONE:
+                    serverStatusLabel.setText("Bluetooth Status: Not Connected");
+                    bluetoothSwitch.setChecked(false);
+                    disableButtonControl();
+                    break;
+            }
+        }));
 
         pillow1InflateButton.setOnClickListener(new View.OnClickListener() {
             @Override
