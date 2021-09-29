@@ -193,7 +193,6 @@ public class BluetoothService {
         ConnectedThread r;
         synchronized (this) {
             if (mConnectedThread == null) {
-                Log.d("WRITE", "connected thrd null");
                 return;
             }
             r = mConnectedThread;
@@ -443,9 +442,7 @@ public class BluetoothService {
             Log.d(TAG, "write: Writing to outputstream: " + text);
             try {
                 mmOutStream.write(buffer);
-                mmOutStream.flush();    // try to flush output
-                // this log command fixes only successfully writing every other time for some reason
-                Log.d(TAG, "write: wrote");
+                mmOutStream.flush();
             } catch (IOException e) {
                 Log.e(TAG, "write: Error writing to output stream. " + e.getMessage());
             }
