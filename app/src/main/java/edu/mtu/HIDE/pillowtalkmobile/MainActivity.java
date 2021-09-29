@@ -124,9 +124,14 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
                     interval = settings.getPillow1HighPressureInterval();
                 }
 
-                String command = buildPOSTRequestCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_1);
 
-                sendPOSTRequest(settings.getIPAddress(), command);
+                String command;
+                if(settings.getUseBluetooth()) {
+                    command = buildBluetoothCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_1);
+                    bluetoothService.write(command);
+                } else
+                    command = buildPOSTRequestCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_1);
+                    sendPOSTRequest(settings.getIPAddress(), command);
             }
         });
 
@@ -147,9 +152,14 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
                     interval = settings.getPillow1HighPressureInterval();
                 }
 
-                String command = buildPOSTRequestCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_1);
 
-                sendPOSTRequest(settings.getIPAddress(), command);
+                String command;
+                if(settings.getUseBluetooth()) {
+                    command = buildBluetoothCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_1);
+                    bluetoothService.write(command);
+                } else
+                    command = buildPOSTRequestCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_1);
+                    sendPOSTRequest(settings.getIPAddress(), command);
             }
         });
 
@@ -170,9 +180,14 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
                     interval = settings.getPillow2HighPressureInterval();
                 }
 
-                String command = buildPOSTRequestCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_2);
 
-                sendPOSTRequest(settings.getIPAddress(), command);
+                String command;
+                if(settings.getUseBluetooth()) {
+                    command = buildBluetoothCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_2);
+                    bluetoothService.write(command);
+                } else
+                    command = buildPOSTRequestCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_2);
+                    sendPOSTRequest(settings.getIPAddress(), command);
             }
         });
 
@@ -193,9 +208,13 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
                     interval = settings.getPillow2HighPressureInterval();
                 }
 
-                String command = buildPOSTRequestCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_2);
-
-                sendPOSTRequest(settings.getIPAddress(), command);
+                String command;
+                if(settings.getUseBluetooth()) {
+                    command = buildBluetoothCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_2);
+                    bluetoothService.write(command);
+                } else
+                    command = buildPOSTRequestCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_2);
+                    sendPOSTRequest(settings.getIPAddress(), command);
             }
         });
 
@@ -332,6 +351,10 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         //expected format = "command=inflate%20cushion_1%206"
 
         return "command=" + base + "%20" + pillowID + "%20" + baseParameter;
+    }
+
+    private String buildBluetoothCommand(PillowBaseCommand base, String baseParameter, PillowID pillowID) {
+        return base + " " + pillowID + " " + baseParameter;
     }
 
     private void testHttpsServerConnectivity(String ip)
