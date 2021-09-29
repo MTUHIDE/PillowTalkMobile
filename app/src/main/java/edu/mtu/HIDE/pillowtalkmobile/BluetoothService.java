@@ -16,12 +16,13 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 import java.util.Set;
 import java.util.UUID;
 
 public class BluetoothService {
 
-    private final List<BluetoothServiceEventListener> listeners = new ArrayList<BluetoothServiceEventListener>();
+    private final List<BluetoothServiceEventListener> listeners = new ArrayList<>();
 
     public interface BluetoothServiceEventListener
     {
@@ -91,7 +92,7 @@ public class BluetoothService {
      * only send valid states
      * @param state
      */
-    private void setState(int state) {
+    private synchronized void setState(int state) {
         mState = state;
         for (BluetoothServiceEventListener bluetoothServiceEventListener : listeners) {
             bluetoothServiceEventListener.onStateChange();
@@ -172,7 +173,9 @@ public class BluetoothService {
                 mConnectedThread = null;
             }
 
-            ConnectThread mConnectThread = new ConnectThread(bluetoothDevice);
+            // weird java behavior possible with original
+            //ConnectThread mConnectThread = new ConnectThread(bluetoothDevice);
+            mConnectThread = new ConnectThread(bluetoothDevice);
             mConnectThread.start();
         } else {
             Log.e(TAG, "bluetoothDevice is null");
@@ -190,6 +193,7 @@ public class BluetoothService {
         ConnectedThread r;
         synchronized (this) {
             if (mConnectedThread == null) {
+                Log.d("WRITE", "connected thrd null");
                 return;
             }
             r = mConnectedThread;
@@ -439,6 +443,9 @@ public class BluetoothService {
             Log.d(TAG, "write: Writing to outputstream: " + text);
             try {
                 mmOutStream.write(buffer);
+                mmOutStream.flush();    // try to flush output
+                // this log command fixes only successfully writing every other time for some reason
+                Log.d(TAG, "write: wrote");
             } catch (IOException e) {
                 Log.e(TAG, "write: Error writing to output stream. " + e.getMessage());
             }
