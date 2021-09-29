@@ -18,7 +18,7 @@ import static java.lang.Thread.sleep;
 
 public class MainActivity extends AppCompatActivity implements TestServerConnectionAsyncResponse, POSTRequestAsyncResponse {
 
-    private static final String BLUETOOTH_DEVICE = "LAPTOP-5T6R7RAM";
+    private static final String BLUETOOTH_DEVICE = "pi";
 
     //global references
     BluetoothService bluetoothService;
@@ -41,24 +41,13 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final Switch bluetoothSwitch = findViewById(R.id.use_bluetooth_switch);
         //global references
         bluetoothService = new BluetoothService(this);
-        bluetoothService.addListener(() -> runOnUiThread(() -> {
-            int newState = bluetoothService.getState();
-            switch (newState) {
-                case BluetoothService.STATE_CONNECTED:
-                    serverStatusLabel.setText("Bluetooth Status: Connected");
-                    enableButtonControl();
-                    break;
-                case BluetoothService.STATE_NONE:
-                    serverStatusLabel.setText("Bluetooth Status: Not Connected");
-                    bluetoothSwitch.setChecked(false);
-                    disableButtonControl();
-            }
-        }));
+
         //initialize UI references
         serverStatusLabel = findViewById(R.id.network_status_label);
+
+        final Switch bluetoothSwitch = findViewById(R.id.use_bluetooth_switch);
 
         final EditText serverIPEditText = findViewById(R.id.server_ip_text);
 
@@ -102,140 +91,162 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         pillow1HighInflateEditText.setText(String.valueOf(settings.getPillow1HighPressureInterval()));
         pillow2HighInflateEditText.setText(String.valueOf(settings.getPillow2HighPressureInterval()));
 
-        pillow1InflateButton.setOnClickListener(view -> {
-            int interval = 0;
-            if (pillow1PresetLow.isChecked())
-            {
-                interval = settings.getPillow1LowPressureInterval();
-            }
-            else if (pillow1PresetMedium.isChecked())
-            {
-                interval = settings.getPillow1MediumPressureInterval();
-            }
-            else if (pillow1PresetHigh.isChecked())
-            {
-                interval = settings.getPillow1HighPressureInterval();
-            }
 
-            String command = buildPOSTRequestCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_1);
+        bluetoothService.addListener(() -> runOnUiThread(() -> {
+            int newState = bluetoothService.getState();
+            switch (newState) {
+                case BluetoothService.STATE_CONNECTED:
+                    serverStatusLabel.setText("Bluetooth Status: Connected");
+                    enableButtonControl();
+                    break;
+                case BluetoothService.STATE_NONE:
+                    serverStatusLabel.setText("Bluetooth Status: Not Connected");
+                    bluetoothSwitch.setChecked(false);
+                    disableButtonControl();
+                    break;
+            }
+        }));
 
-            if( bluetoothSwitch.isChecked() ) {
-                bluetoothService.write(command);
-            } else {
-                sendPOSTRequest(settings.getIPAddress(), command);
+        pillow1InflateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int interval = 0;
+                if (pillow1PresetLow.isChecked())
+                {
+                    interval = settings.getPillow1LowPressureInterval();
+                }
+                else if (pillow1PresetMedium.isChecked())
+                {
+                    interval = settings.getPillow1MediumPressureInterval();
+                }
+                else if (pillow1PresetHigh.isChecked())
+                {
+                    interval = settings.getPillow1HighPressureInterval();
+                }
+
+
+                String command;
+                if(settings.getUseBluetooth()) {
+                    command = buildBluetoothCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_1);
+                    bluetoothService.write(command);
+                } else {
+                    command = buildPOSTRequestCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_1);
+                    sendPOSTRequest(settings.getIPAddress(), command);
+                }
             }
         });
 
-        pillow1DeflateButton.setOnClickListener(view -> {
-            int interval = 0;
-            if (pillow1PresetLow.isChecked())
-            {
-                interval = settings.getPillow1LowPressureInterval();
-            }
-            else if (pillow1PresetMedium.isChecked())
-            {
-                interval = settings.getPillow1MediumPressureInterval();
-            }
-            else if (pillow1PresetHigh.isChecked())
-            {
-                interval = settings.getPillow1HighPressureInterval();
-            }
+        pillow1DeflateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int interval = 0;
+                if (pillow1PresetLow.isChecked())
+                {
+                    interval = settings.getPillow1LowPressureInterval();
+                }
+                else if (pillow1PresetMedium.isChecked())
+                {
+                    interval = settings.getPillow1MediumPressureInterval();
+                }
+                else if (pillow1PresetHigh.isChecked())
+                {
+                    interval = settings.getPillow1HighPressureInterval();
+                }
 
-            String command = buildPOSTRequestCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_1);
 
-            if( bluetoothSwitch.isChecked() ) {
-                bluetoothService.write(command);
-            } else {
-                sendPOSTRequest(settings.getIPAddress(), command);
+                String command;
+                if(settings.getUseBluetooth()) {
+                    command = buildBluetoothCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_1);
+                    bluetoothService.write(command);
+                } else {
+                    command = buildPOSTRequestCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_1);
+                    sendPOSTRequest(settings.getIPAddress(), command);
+                }
             }
         });
 
-        pillow2InflateButton.setOnClickListener(view -> {
-            int interval = 0;
-            if (pillow2PresetLow.isChecked())
-            {
-                interval = settings.getPillow2LowPressureInterval();
-            }
-            else if (pillow2PresetMedium.isChecked())
-            {
-                interval = settings.getPillow2MediumPressureInterval();
-            }
-            else if (pillow2PresetHigh.isChecked())
-            {
-                interval = settings.getPillow2HighPressureInterval();
-            }
+        pillow2InflateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int interval = 0;
+                if (pillow2PresetLow.isChecked())
+                {
+                    interval = settings.getPillow2LowPressureInterval();
+                }
+                else if (pillow2PresetMedium.isChecked())
+                {
+                    interval = settings.getPillow2MediumPressureInterval();
+                }
+                else if (pillow2PresetHigh.isChecked())
+                {
+                    interval = settings.getPillow2HighPressureInterval();
+                }
 
-            String command = buildPOSTRequestCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_2);
 
-            if( bluetoothSwitch.isChecked() ) {
-                bluetoothService.write(command);
-            } else {
-                sendPOSTRequest(settings.getIPAddress(), command);
+                String command;
+                if(settings.getUseBluetooth()) {
+                    command = buildBluetoothCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_2);
+                    bluetoothService.write(command);
+                } else {
+                    command = buildPOSTRequestCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_2);
+                    sendPOSTRequest(settings.getIPAddress(), command);
+                }
             }
         });
 
-        pillow2DeflateButton.setOnClickListener(view -> {
-            int interval = 0;
-            if (pillow2PresetLow.isChecked())
-            {
-                interval = settings.getPillow2LowPressureInterval();
-            }
-            else if (pillow2PresetMedium.isChecked())
-            {
-                interval = settings.getPillow2MediumPressureInterval();
-            }
-            else if (pillow2PresetHigh.isChecked())
-            {
-                interval = settings.getPillow2HighPressureInterval();
-            }
+        pillow2DeflateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int interval = 0;
+                if (pillow2PresetLow.isChecked())
+                {
+                    interval = settings.getPillow2LowPressureInterval();
+                }
+                else if (pillow2PresetMedium.isChecked())
+                {
+                    interval = settings.getPillow2MediumPressureInterval();
+                }
+                else if (pillow2PresetHigh.isChecked())
+                {
+                    interval = settings.getPillow2HighPressureInterval();
+                }
 
-            String command = buildPOSTRequestCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_2);
-
-            if( bluetoothSwitch.isChecked() ) {
-                bluetoothService.write(command);
-            } else {
-                sendPOSTRequest(settings.getIPAddress(), command);
+                String command;
+                if(settings.getUseBluetooth()) {
+                    command = buildBluetoothCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_2);
+                    bluetoothService.write(command);
+                } else {
+                    command = buildPOSTRequestCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_2);
+                    sendPOSTRequest(settings.getIPAddress(), command);
+                }
             }
         });
 
         //Add UI listeners
-        bluetoothSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
-            BluetoothDevice bluetoothDevice = bluetoothService.findDevice(BLUETOOTH_DEVICE);
+        bluetoothSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                BluetoothDevice bluetoothDevice = bluetoothService.findDevice(BLUETOOTH_DEVICE);
+                if (bluetoothDevice != null)
+                {
+                    settings.setUseBluetooth(b);
+                    serverIPEditText.setEnabled(!settings.getUseBluetooth()); //disable if using bluetooth
 
-            // this if-statement is meant to make it so we only try to connect on turning bluetooth on
-            if(!bluetoothSwitch.isChecked()) {
-                // disable bluetooth, enable connecting to server, send a kill command to the pi
-                settings.setUseBluetooth(false);
-                serverIPEditText.setEnabled(true);
+                    bluetoothService.enableBluetooth();
+                    bluetoothService.connect(bluetoothDevice);
+                    Log.d("TESTING", "mainactivity getting bluetooth state: " + bluetoothService.getState());
+                }
+                else
+                {
+                    bluetoothSwitch.setChecked(false);
+                    settings.setUseBluetooth(false);
+                    serverIPEditText.setEnabled(true);
 
-                // this is a temporary kill command, will likely change when the pi end changes
-                bluetoothService.write("kill"); // idk how this will interact if we weren't connected
+                    Log.d("TESTING", "MainActivity - Bluetooth device not found");
+                    serverStatusLabel.setText("Server Status: Bluetooth device not found");
+                }
 
-                // disable bluetooth service
-                bluetoothService.stop();
-                return;
             }
-
-            if (bluetoothDevice != null)
-            {
-                settings.setUseBluetooth(b);
-                serverIPEditText.setEnabled(!settings.getUseBluetooth()); //disable if using bluetooth
-
-                bluetoothService.enableBluetooth();
-                bluetoothService.connect(bluetoothDevice);
-                Log.d("TESTING", "mainactivity getting bluetooth state: " + bluetoothService.getState());
-            }
-            else
-            {
-                bluetoothSwitch.setChecked(false);
-                settings.setUseBluetooth(false);
-                serverIPEditText.setEnabled(true);
-
-                Log.d("TESTING", "MainActivity - Bluetooth device not found");
-                serverStatusLabel.setText("Server Status: Bluetooth device not found");
-                bluetoothService.stop();
-            }
-
         });
 
         serverIPEditText.addTextChangedListener(new TextChangedListener<EditText>(serverIPEditText) {
@@ -344,6 +355,10 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         //expected format = "command=inflate%20cushion_1%206"
 
         return "command=" + base + "%20" + pillowID + "%20" + baseParameter;
+    }
+
+    private String buildBluetoothCommand(PillowBaseCommand base, String baseParameter, PillowID pillowID) {
+        return base + " " + pillowID + " " + baseParameter;
     }
 
     private void testHttpsServerConnectivity(String ip)
