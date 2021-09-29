@@ -201,12 +201,19 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         //Add UI listeners
         bluetoothSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
             BluetoothDevice bluetoothDevice = bluetoothService.findDevice(BLUETOOTH_DEVICE);
+
+            // this if-statement is meant to make it so we only try to connect on turning bluetooth on
             if(!bluetoothSwitch.isChecked()) {
+                // disable bluetooth, enable connecting to server, send a kill command to the pi
                 settings.setUseBluetooth(false);
                 serverIPEditText.setEnabled(true);
+
+                // this is a temporary kill command, will likely change when the pi end changes
                 bluetoothService.write("kill"); // idk how this will interact if we weren't connected
+
+                // disable bluetooth service
                 bluetoothService.stop();
-                return;    // if we are turning off bluetooth, don't bother connecting
+                return;
             }
 
             if (bluetoothDevice != null)
