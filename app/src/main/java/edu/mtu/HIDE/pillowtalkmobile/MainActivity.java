@@ -129,9 +129,10 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
                 if(settings.getUseBluetooth()) {
                     command = buildBluetoothCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_1);
                     bluetoothService.write(command);
-                } else
+                } else {
                     command = buildPOSTRequestCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_1);
                     sendPOSTRequest(settings.getIPAddress(), command);
+                }
             }
         });
 
@@ -157,9 +158,10 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
                 if(settings.getUseBluetooth()) {
                     command = buildBluetoothCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_1);
                     bluetoothService.write(command);
-                } else
+                } else {
                     command = buildPOSTRequestCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_1);
                     sendPOSTRequest(settings.getIPAddress(), command);
+                }
             }
         });
 
@@ -185,9 +187,10 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
                 if(settings.getUseBluetooth()) {
                     command = buildBluetoothCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_2);
                     bluetoothService.write(command);
-                } else
+                } else {
                     command = buildPOSTRequestCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_2);
                     sendPOSTRequest(settings.getIPAddress(), command);
+                }
             }
         });
 
@@ -212,9 +215,10 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
                 if(settings.getUseBluetooth()) {
                     command = buildBluetoothCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_2);
                     bluetoothService.write(command);
-                } else
+                } else {
                     command = buildPOSTRequestCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_2);
                     sendPOSTRequest(settings.getIPAddress(), command);
+                }
             }
         });
 
