@@ -18,7 +18,7 @@ import static java.lang.Thread.sleep;
 
 public class MainActivity extends AppCompatActivity implements TestServerConnectionAsyncResponse, POSTRequestAsyncResponse {
 
-    private static final String BLUETOOTH_DEVICE = "pi";
+    private static final String BLUETOOTH_DEVICE = "LAPTOP-5T6R7RAM";
 
     //global references
     BluetoothService bluetoothService;
@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        final Switch bluetoothSwitch = findViewById(R.id.use_bluetooth_switch);
         //global references
         bluetoothService = new BluetoothService(this);
         bluetoothService.addListener(() -> runOnUiThread(() -> {
@@ -49,13 +50,13 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
                 case BluetoothService.STATE_CONNECTED:
                     serverStatusLabel.setText("Bluetooth Status: Connected");
                     break;
+                case BluetoothService.STATE_NONE:
+                    serverStatusLabel.setText("Bluetooth Status: Not Connected");
+                    bluetoothSwitch.setChecked(false);
             }
         }));
-
         //initialize UI references
         serverStatusLabel = findViewById(R.id.network_status_label);
-
-        final Switch bluetoothSwitch = findViewById(R.id.use_bluetooth_switch);
 
         final EditText serverIPEditText = findViewById(R.id.server_ip_text);
 
@@ -196,6 +197,14 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 BluetoothDevice bluetoothDevice = bluetoothService.findDevice(BLUETOOTH_DEVICE);
+                if(!bluetoothSwitch.isChecked()) {
+                    settings.setUseBluetooth(false);
+                    serverIPEditText.setEnabled(true);
+                    bluetoothService.write("kill"); // idk how this will interact if we weren't connected
+                    bluetoothService.stop();
+                    return;    // if we are turning off bluetooth, don't bother connecting
+                }
+
                 if (bluetoothDevice != null)
                 {
                     settings.setUseBluetooth(b);
@@ -213,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
 
                     Log.d("TESTING", "MainActivity - Bluetooth device not found");
                     serverStatusLabel.setText("Server Status: Bluetooth device not found");
+                    bluetoothService.stop();
                 }
 
             }
