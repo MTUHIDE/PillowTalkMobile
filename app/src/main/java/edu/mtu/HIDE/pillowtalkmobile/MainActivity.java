@@ -223,30 +223,32 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         });
 
         //Add UI listeners
-        bluetoothSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                BluetoothDevice bluetoothDevice = bluetoothService.findDevice(BLUETOOTH_DEVICE);
-                if (bluetoothDevice != null)
-                {
-                    settings.setUseBluetooth(b);
-                    serverIPEditText.setEnabled(!settings.getUseBluetooth()); //disable if using bluetooth
-
-                    bluetoothService.enableBluetooth();
-                    bluetoothService.connect(bluetoothDevice);
-                    Log.d("TESTING", "mainactivity getting bluetooth state: " + bluetoothService.getState());
-                }
-                else
-                {
-                    bluetoothSwitch.setChecked(false);
-                    settings.setUseBluetooth(false);
-                    serverIPEditText.setEnabled(true);
-
-                    Log.d("TESTING", "MainActivity - Bluetooth device not found");
-                    serverStatusLabel.setText("Server Status: Bluetooth device not found");
-                }
-
+        bluetoothSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
+            if ( !bluetoothSwitch.isChecked() ) {
+                settings.setUseBluetooth(false);
+                serverIPEditText.setEnabled(true);
             }
+
+            BluetoothDevice bluetoothDevice = bluetoothService.findDevice(BLUETOOTH_DEVICE);
+            if (bluetoothDevice != null)
+            {
+                settings.setUseBluetooth(b);
+                serverIPEditText.setEnabled(!settings.getUseBluetooth()); //disable if using bluetooth
+
+                bluetoothService.enableBluetooth();
+                bluetoothService.connect(bluetoothDevice);
+                Log.d("TESTING", "mainactivity getting bluetooth state: " + bluetoothService.getState());
+            }
+            else
+            {
+                bluetoothSwitch.setChecked(false);
+                settings.setUseBluetooth(false);
+                serverIPEditText.setEnabled(true);
+
+                Log.d("TESTING", "MainActivity - Bluetooth device not found");
+                serverStatusLabel.setText("Server Status: Bluetooth device not found");
+            }
+
         });
 
         serverIPEditText.addTextChangedListener(new TextChangedListener<EditText>(serverIPEditText) {
