@@ -104,98 +104,86 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
             }
         }));
 
-        pillow1InflateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int interval = 0;
-                if (pillow1PresetLow.isChecked()) {
-                    interval = settings.getPillow1LowPressureInterval();
-                } else if (pillow1PresetMedium.isChecked()) {
-                    interval = settings.getPillow1MediumPressureInterval();
-                } else if (pillow1PresetHigh.isChecked()) {
-                    interval = settings.getPillow1HighPressureInterval();
-                }
+        pillow1InflateButton.setOnClickListener(view -> {
+            int interval = 0;
+            if (pillow1PresetLow.isChecked()) {
+                interval = settings.getPillow1LowPressureInterval();
+            } else if (pillow1PresetMedium.isChecked()) {
+                interval = settings.getPillow1MediumPressureInterval();
+            } else if (pillow1PresetHigh.isChecked()) {
+                interval = settings.getPillow1HighPressureInterval();
+            }
 
 
-                String command;
-                if (settings.getUseBluetooth()) {
-                    command = buildBluetoothCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_1);
-                    bluetoothService.write(command);
-                } else {
-                    command = buildPOSTRequestCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_1);
-                    sendPOSTRequest(settings.getIPAddress(), command);
-                }
+            String command;
+            if (settings.getUseBluetooth()) {
+                command = buildBluetoothCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_1);
+                bluetoothService.write(command);
+            } else {
+                command = buildPOSTRequestCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_1);
+                sendPOSTRequest(settings.getIPAddress(), command);
             }
         });
 
-        pillow1DeflateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int interval = 0;
-                if (pillow1PresetLow.isChecked()) {
-                    interval = settings.getPillow1LowPressureInterval();
-                } else if (pillow1PresetMedium.isChecked()) {
-                    interval = settings.getPillow1MediumPressureInterval();
-                } else if (pillow1PresetHigh.isChecked()) {
-                    interval = settings.getPillow1HighPressureInterval();
-                }
+        pillow1DeflateButton.setOnClickListener(view -> {
+            int interval = 0;
+            if (pillow1PresetLow.isChecked()) {
+                interval = settings.getPillow1LowPressureInterval();
+            } else if (pillow1PresetMedium.isChecked()) {
+                interval = settings.getPillow1MediumPressureInterval();
+            } else if (pillow1PresetHigh.isChecked()) {
+                interval = settings.getPillow1HighPressureInterval();
+            }
 
 
-                String command;
-                if (settings.getUseBluetooth()) {
-                    command = buildBluetoothCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_1);
-                    bluetoothService.write(command);
-                } else {
-                    command = buildPOSTRequestCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_1);
-                    sendPOSTRequest(settings.getIPAddress(), command);
-                }
+            String command;
+            if (settings.getUseBluetooth()) {
+                command = buildBluetoothCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_1);
+                bluetoothService.write(command);
+            } else {
+                command = buildPOSTRequestCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_1);
+                sendPOSTRequest(settings.getIPAddress(), command);
             }
         });
 
-        pillow2InflateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int interval = 0;
-                if (pillow2PresetLow.isChecked()) {
-                    interval = settings.getPillow2LowPressureInterval();
-                } else if (pillow2PresetMedium.isChecked()) {
-                    interval = settings.getPillow2MediumPressureInterval();
-                } else if (pillow2PresetHigh.isChecked()) {
-                    interval = settings.getPillow2HighPressureInterval();
-                }
+        pillow2InflateButton.setOnClickListener(view -> {
+            int interval = 0;
+            if (pillow2PresetLow.isChecked()) {
+                interval = settings.getPillow2LowPressureInterval();
+            } else if (pillow2PresetMedium.isChecked()) {
+                interval = settings.getPillow2MediumPressureInterval();
+            } else if (pillow2PresetHigh.isChecked()) {
+                interval = settings.getPillow2HighPressureInterval();
+            }
 
 
-                String command;
-                if (settings.getUseBluetooth()) {
-                    command = buildBluetoothCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_2);
-                    bluetoothService.write(command);
-                } else {
-                    command = buildPOSTRequestCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_2);
-                    sendPOSTRequest(settings.getIPAddress(), command);
-                }
+            String command;
+            if (settings.getUseBluetooth()) {
+                command = buildBluetoothCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_2);
+                bluetoothService.write(command);
+            } else {
+                command = buildPOSTRequestCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_2);
+                sendPOSTRequest(settings.getIPAddress(), command);
             }
         });
 
-        pillow2DeflateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int interval = 0;
-                if (pillow2PresetLow.isChecked()) {
-                    interval = settings.getPillow2LowPressureInterval();
-                } else if (pillow2PresetMedium.isChecked()) {
-                    interval = settings.getPillow2MediumPressureInterval();
-                } else if (pillow2PresetHigh.isChecked()) {
-                    interval = settings.getPillow2HighPressureInterval();
-                }
+        pillow2DeflateButton.setOnClickListener(view -> {
+            int interval = 0;
+            if (pillow2PresetLow.isChecked()) {
+                interval = settings.getPillow2LowPressureInterval();
+            } else if (pillow2PresetMedium.isChecked()) {
+                interval = settings.getPillow2MediumPressureInterval();
+            } else if (pillow2PresetHigh.isChecked()) {
+                interval = settings.getPillow2HighPressureInterval();
+            }
 
-                String command;
-                if (settings.getUseBluetooth()) {
-                    command = buildBluetoothCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_2);
-                    bluetoothService.write(command);
-                } else {
-                    command = buildPOSTRequestCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_2);
-                    sendPOSTRequest(settings.getIPAddress(), command);
-                }
+            String command;
+            if (settings.getUseBluetooth()) {
+                command = buildBluetoothCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_2);
+                bluetoothService.write(command);
+            } else {
+                command = buildPOSTRequestCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_2);
+                sendPOSTRequest(settings.getIPAddress(), command);
             }
         });
 
