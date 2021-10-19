@@ -1,20 +1,17 @@
 package edu.mtu.HIDE.pillowtalkmobile;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import static java.lang.Thread.sleep;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity implements TestServerConnectionAsyncResponse, POSTRequestAsyncResponse {
 
@@ -111,22 +108,17 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
             @Override
             public void onClick(View view) {
                 int interval = 0;
-                if (pillow1PresetLow.isChecked())
-                {
+                if (pillow1PresetLow.isChecked()) {
                     interval = settings.getPillow1LowPressureInterval();
-                }
-                else if (pillow1PresetMedium.isChecked())
-                {
+                } else if (pillow1PresetMedium.isChecked()) {
                     interval = settings.getPillow1MediumPressureInterval();
-                }
-                else if (pillow1PresetHigh.isChecked())
-                {
+                } else if (pillow1PresetHigh.isChecked()) {
                     interval = settings.getPillow1HighPressureInterval();
                 }
 
 
                 String command;
-                if(settings.getUseBluetooth()) {
+                if (settings.getUseBluetooth()) {
                     command = buildBluetoothCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_1);
                     bluetoothService.write(command);
                 } else {
@@ -140,22 +132,17 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
             @Override
             public void onClick(View view) {
                 int interval = 0;
-                if (pillow1PresetLow.isChecked())
-                {
+                if (pillow1PresetLow.isChecked()) {
                     interval = settings.getPillow1LowPressureInterval();
-                }
-                else if (pillow1PresetMedium.isChecked())
-                {
+                } else if (pillow1PresetMedium.isChecked()) {
                     interval = settings.getPillow1MediumPressureInterval();
-                }
-                else if (pillow1PresetHigh.isChecked())
-                {
+                } else if (pillow1PresetHigh.isChecked()) {
                     interval = settings.getPillow1HighPressureInterval();
                 }
 
 
                 String command;
-                if(settings.getUseBluetooth()) {
+                if (settings.getUseBluetooth()) {
                     command = buildBluetoothCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_1);
                     bluetoothService.write(command);
                 } else {
@@ -169,22 +156,17 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
             @Override
             public void onClick(View view) {
                 int interval = 0;
-                if (pillow2PresetLow.isChecked())
-                {
+                if (pillow2PresetLow.isChecked()) {
                     interval = settings.getPillow2LowPressureInterval();
-                }
-                else if (pillow2PresetMedium.isChecked())
-                {
+                } else if (pillow2PresetMedium.isChecked()) {
                     interval = settings.getPillow2MediumPressureInterval();
-                }
-                else if (pillow2PresetHigh.isChecked())
-                {
+                } else if (pillow2PresetHigh.isChecked()) {
                     interval = settings.getPillow2HighPressureInterval();
                 }
 
 
                 String command;
-                if(settings.getUseBluetooth()) {
+                if (settings.getUseBluetooth()) {
                     command = buildBluetoothCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_2);
                     bluetoothService.write(command);
                 } else {
@@ -198,21 +180,16 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
             @Override
             public void onClick(View view) {
                 int interval = 0;
-                if (pillow2PresetLow.isChecked())
-                {
+                if (pillow2PresetLow.isChecked()) {
                     interval = settings.getPillow2LowPressureInterval();
-                }
-                else if (pillow2PresetMedium.isChecked())
-                {
+                } else if (pillow2PresetMedium.isChecked()) {
                     interval = settings.getPillow2MediumPressureInterval();
-                }
-                else if (pillow2PresetHigh.isChecked())
-                {
+                } else if (pillow2PresetHigh.isChecked()) {
                     interval = settings.getPillow2HighPressureInterval();
                 }
 
                 String command;
-                if(settings.getUseBluetooth()) {
+                if (settings.getUseBluetooth()) {
                     command = buildBluetoothCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_2);
                     bluetoothService.write(command);
                 } else {
@@ -224,23 +201,20 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
 
         //Add UI listeners
         bluetoothSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
-            if ( !bluetoothSwitch.isChecked() ) {
+            if (!bluetoothSwitch.isChecked()) {
                 settings.setUseBluetooth(false);
                 serverIPEditText.setEnabled(true);
             }
 
             BluetoothDevice bluetoothDevice = bluetoothService.findDevice(BLUETOOTH_DEVICE);
-            if (bluetoothDevice != null)
-            {
+            if (bluetoothDevice != null) {
                 settings.setUseBluetooth(b);
                 serverIPEditText.setEnabled(!settings.getUseBluetooth()); //disable if using bluetooth
 
                 bluetoothService.enableBluetooth();
                 bluetoothService.connect(bluetoothDevice);
                 Log.d("TESTING", "mainactivity getting bluetooth state: " + bluetoothService.getState());
-            }
-            else
-            {
+            } else {
                 bluetoothSwitch.setChecked(false);
                 settings.setUseBluetooth(false);
                 serverIPEditText.setEnabled(true);
@@ -281,7 +255,8 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
             @Override
             public void onTextChanged(EditText target, Editable s) {
                 String newValue = target.getText().toString();
-                if (!newValue.isEmpty()) settings.setPillow1LowPressureInterval(Integer.parseInt(newValue));
+                if (!newValue.isEmpty())
+                    settings.setPillow1LowPressureInterval(Integer.parseInt(newValue));
                 else settings.setPillow1LowPressureInterval(1);
             }
         });
@@ -290,7 +265,8 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
             @Override
             public void onTextChanged(EditText target, Editable s) {
                 String newValue = target.getText().toString();
-                if (!newValue.isEmpty()) settings.setPillow2LowPressureInterval(Integer.parseInt(newValue));
+                if (!newValue.isEmpty())
+                    settings.setPillow2LowPressureInterval(Integer.parseInt(newValue));
                 else settings.setPillow2LowPressureInterval(1);
             }
         });
@@ -299,7 +275,8 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
             @Override
             public void onTextChanged(EditText target, Editable s) {
                 String newValue = target.getText().toString();
-                if (!newValue.isEmpty()) settings.setPillow1MediumPressureInterval(Integer.parseInt(newValue));
+                if (!newValue.isEmpty())
+                    settings.setPillow1MediumPressureInterval(Integer.parseInt(newValue));
                 else settings.setPillow1MediumPressureInterval(2);
             }
         });
@@ -308,7 +285,8 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
             @Override
             public void onTextChanged(EditText target, Editable s) {
                 String newValue = target.getText().toString();
-                if (!newValue.isEmpty()) settings.setPillow2MediumPressureInterval(Integer.parseInt(newValue));
+                if (!newValue.isEmpty())
+                    settings.setPillow2MediumPressureInterval(Integer.parseInt(newValue));
                 else settings.setPillow2MediumPressureInterval(2);
             }
         });
@@ -317,7 +295,8 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
             @Override
             public void onTextChanged(EditText target, Editable s) {
                 String newValue = target.getText().toString();
-                if (!newValue.isEmpty()) settings.setPillow1HighPressureInterval(Integer.parseInt(newValue));
+                if (!newValue.isEmpty())
+                    settings.setPillow1HighPressureInterval(Integer.parseInt(newValue));
                 else settings.setPillow1HighPressureInterval(3);
             }
         });
@@ -326,7 +305,8 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
             @Override
             public void onTextChanged(EditText target, Editable s) {
                 String newValue = target.getText().toString();
-                if (!newValue.isEmpty()) settings.setPillow2HighPressureInterval(Integer.parseInt(newValue));
+                if (!newValue.isEmpty())
+                    settings.setPillow2HighPressureInterval(Integer.parseInt(newValue));
                 else settings.setPillow2HighPressureInterval(3);
             }
         });
@@ -335,8 +315,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         testHttpsServerConnectivity(settings.getIPAddress());
     }
 
-    private void sendPOSTRequest(String ip, String command)
-    {
+    private void sendPOSTRequest(String ip, String command) {
         disableButtonControl();
 
         if (ip.isEmpty()) return;
@@ -344,15 +323,14 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         serverStatusLabel.setText("Server Status: Trying to send command");
 
         String address = "http://" + ip + ":443/command";
-        Log.d("TESTING",  "Trying: " + address);
+        Log.d("TESTING", "Trying: " + address);
 
         POSTRequestTask postRequestTask = new POSTRequestTask();
         postRequestTask.delegate = this;
         postRequestTask.execute(address, command);
     }
 
-    private String buildPOSTRequestCommand(PillowBaseCommand base, String baseParameter, PillowID pillowID)
-    {
+    private String buildPOSTRequestCommand(PillowBaseCommand base, String baseParameter, PillowID pillowID) {
         //example: base = inflate, baseParameter = 5 (secs) ,  pillowID  = cushion_1
         //expected format = "command=inflate%20cushion_1%206"
 
@@ -363,8 +341,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         return base + " " + pillowID + " " + baseParameter;
     }
 
-    private void testHttpsServerConnectivity(String ip)
-    {
+    private void testHttpsServerConnectivity(String ip) {
         disableButtonControl();
 
         if (ip.isEmpty()) return;
@@ -380,8 +357,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         testServerConnectionTask.execute(address1);
     }
 
-    void enableButtonControl()
-    {
+    void enableButtonControl() {
         pillow1InflateButton.setEnabled(true);
         pillow1DeflateButton.setEnabled(true);
         pillow2InflateButton.setEnabled(true);
@@ -395,8 +371,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         pillow2PresetHigh.setEnabled(true);
     }
 
-    void disableButtonControl()
-    {
+    void disableButtonControl() {
         pillow1InflateButton.setEnabled(false);
         pillow1DeflateButton.setEnabled(false);
         pillow2InflateButton.setEnabled(false);
@@ -413,13 +388,10 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
     @Override
     public void testServerConnectionTaskResponse(String results) {
         //200 = Good HTTPS response code
-        if (results.equals("200 OK"))
-        {
+        if (results.equals("200 OK")) {
             serverStatusLabel.setText("Server Status: Connected");
             enableButtonControl();
-        }
-        else
-        {
+        } else {
             serverStatusLabel.setText("Server Status: Failed to Connect");
             disableButtonControl();
         }
@@ -428,13 +400,10 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
     @Override
     public void POSTRequestTaskResponse(String results) {
         //200 = Good HTTPS response code
-        if (results.equals("200 OK"))
-        {
+        if (results.equals("200 OK")) {
             serverStatusLabel.setText("Server Status: Command Executed");
             enableButtonControl();
-        }
-        else
-        {
+        } else {
             serverStatusLabel.setText("Server Status: Failed to Connect");
             disableButtonControl();
         }
