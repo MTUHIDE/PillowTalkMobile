@@ -227,11 +227,25 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/network_status_label"
+                        android:id="@+id/satus_lable"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="15dp"
-                        android:text="Server Status: not connected" />
+                        android:fontFamily="sans-serif"
+                        android:text="Status"
+                        android:textColor="@android:color/white" />
+
+                    <TextView
+                        android:id="@+id/network_status_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Server: Not Connected" />
+
+                    <TextView
+                        android:id="@+id/bluetooth_status_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Bluetooth: Not Connected" />
 
                     <Switch
                         android:id="@+id/use_bluetooth_switch"
