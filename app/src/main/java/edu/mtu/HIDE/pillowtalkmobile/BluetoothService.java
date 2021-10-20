@@ -21,21 +21,29 @@ import java.util.UUID;
 
 public class BluetoothService {
 
-    private final List<BluetoothServiceEventListener> listeners = new ArrayList<BluetoothServiceEventListener>();
+    private final List<StateListener> stateListeners = new ArrayList<>();
+    private final List<MessageListener> messageListeners = new ArrayList<>();
 
-    public interface BluetoothServiceEventListener
-    {
+    public interface StateListener {
         void onStateChange();
     }
+    public interface MessageListener {
+        void onNewMessage();
+    }
 
-    public void addListener(BluetoothServiceEventListener toAdd) {
-        listeners.add(toAdd);
+    public void addStateListener(StateListener toAdd) {
+        stateListeners.add(toAdd);
+    }
+    public void addMessageListener(MessageListener toAdd) {
+        messageListeners.add(toAdd);
     }
 
     public static final int STATE_NONE = 0;
     public static final int STATE_LISTEN = 1;
     public static final int STATE_CONNECTING = 2;
     public static final int STATE_CONNECTED = 3;
+
+    public String latestMessage = "";
 
     private static final String TAG = "BluetoothService";
     private final static UUID PILLOWTALK_UUID = UUID.fromString("79bf39f7-54a4-4015-b27e-0b4be44b506d");
@@ -93,7 +101,7 @@ public class BluetoothService {
      */
     private void setState(int state) {
         mState = state;
-        for (BluetoothServiceEventListener bluetoothServiceEventListener : listeners) {
+        for (StateListener bluetoothServiceEventListener : stateListeners) {
             bluetoothServiceEventListener.onStateChange();
         }
     }
@@ -425,6 +433,10 @@ public class BluetoothService {
                 try {
                     bytes = mmInStream.read(buffer);
                     String incomingMessage = new String(buffer, 0, bytes);
+                    latestMessage = incomingMessage;
+                    for (MessageListener messageListener : messageListeners) {
+                        messageListener.onNewMessage();
+                    }
                     Log.d(TAG, "InputStream: " + incomingMessage);
                 } catch (IOException e) {
                     Log.d(TAG, "Input stream was disconnected", e);

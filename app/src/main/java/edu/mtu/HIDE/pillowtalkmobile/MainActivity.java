@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity implements TestServerConnectionAsyncResponse, POSTRequestAsyncResponse {
 
-    private static final String BLUETOOTH_DEVICE = "pi";
+    private static final String BLUETOOTH_DEVICE = "LAPTOP-5T6R7RAM";
 
     //global references
     BluetoothService bluetoothService;
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         pillow2HighInflateEditText.setText(String.valueOf(settings.getPillow2HighPressureInterval()));
 
 
-        bluetoothService.addListener(() -> runOnUiThread(() -> {
+        bluetoothService.addStateListener(() -> runOnUiThread(() -> {
             int newState = bluetoothService.getState();
             switch (newState) {
                 case BluetoothService.STATE_CONNECTED:
@@ -109,6 +109,10 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
                     bluetoothSwitch.setText("Bluetooth: Listening for Bluetooth Server");
                     break;
             }
+        }));
+
+        bluetoothService.addMessageListener(() -> runOnUiThread(() -> {
+            bluetoothStatusLabel.setText("Bluetooth: " + bluetoothService.latestMessage);
         }));
 
         pillow1InflateButton.setOnClickListener(view -> {
