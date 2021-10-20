@@ -203,6 +203,8 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
             if (!bluetoothSwitch.isChecked()) {
                 settings.setUseBluetooth(false);
                 serverIPEditText.setEnabled(true);
+                bluetoothService.stop();
+                return;
             }
 
             BluetoothDevice bluetoothDevice = bluetoothService.findDevice(BLUETOOTH_DEVICE);
