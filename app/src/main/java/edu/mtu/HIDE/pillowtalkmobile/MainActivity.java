@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity implements TestServerConnectionAsyncResponse, POSTRequestAsyncResponse {
 
-    private static final String BLUETOOTH_DEVICE = "LAPTOP-5T6R7RAM";
+    private static final String BLUETOOTH_DEVICE = "pi";
 
     //global references
     BluetoothService bluetoothService;
