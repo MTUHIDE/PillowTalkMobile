@@ -1,16 +1,21 @@
 package edu.mtu.HIDE.pillowtalkmobile;
 
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity implements TestServerConnectionAsyncResponse, POSTRequestAsyncResponse {
@@ -22,6 +27,8 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
 
     //UI references
     private TextView serverStatusLabel;
+    private TextView pillow_1_label;
+    private TextView pillow_2_label;
     private Button pillow1InflateButton;
     private Button pillow1DeflateButton;
     private Button pillow2InflateButton;
@@ -32,11 +39,18 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
     private RadioButton pillow2PresetLow;
     private RadioButton pillow2PresetMedium;
     private RadioButton pillow2PresetHigh;
+    private ImageButton openSettingsButton;
+
+    SharedPreferences sharedPreferences;
+    private UserSettings settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Initialize values
+        settings = new UserSettings(this);
 
         //global references
         bluetoothService = new BluetoothService(this);
@@ -44,19 +58,15 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         //initialize UI references
         serverStatusLabel = findViewById(R.id.network_status_label);
 
+        pillow_1_label = findViewById(R.id.pillow_1_label);
+        pillow_2_label = findViewById(R.id.pillow_2_label);
+
+        pillow_1_label.setText(settings.getPillow1Nickname());
+        pillow_2_label.setText(settings.getPillow2Nickname());
+
         final Switch bluetoothSwitch = findViewById(R.id.use_bluetooth_switch);
 
         final EditText serverIPEditText = findViewById(R.id.server_ip_text);
-
-        EditText pillow1NicknameEditText = findViewById(R.id.pillow_1_nickname_text);
-        EditText pillow2NicknameEditText = findViewById(R.id.pillow_2_nickname_text);
-
-        EditText pillow1LowInflateEditText = findViewById(R.id.pillow_1_pressure_interval_low_text);
-        EditText pillow2LowInflateEditText = findViewById(R.id.pillow_2_pressure_interval_low_text);
-        EditText pillow1MediumInflateEditText = findViewById(R.id.pillow_1_pressure_interval_medium_text);
-        EditText pillow2MediumInflateEditText = findViewById(R.id.pillow_2_pressure_interval_medium_text);
-        EditText pillow1HighInflateEditText = findViewById(R.id.pillow_1_pressure_interval_high_text);
-        EditText pillow2HighInflateEditText = findViewById(R.id.pillow_2_pressure_interval_high_text);
 
         pillow1InflateButton = findViewById(R.id.pillow_1_button_increase);
         pillow1DeflateButton = findViewById(R.id.pillow_1_button_decrease);
@@ -70,24 +80,18 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         pillow2PresetMedium = findViewById(R.id.pillow_2_preset_medium);
         pillow2PresetHigh = findViewById(R.id.pillow_2_preset_high);
 
-        //Initialize values
-        final UserSettings settings = new UserSettings(this);
+        openSettingsButton = findViewById(R.id.openSettingsButton);
+
 
         bluetoothSwitch.setChecked(settings.getUseBluetooth());
 
         serverIPEditText.setEnabled(!settings.getUseBluetooth()); //disable if using bluetooth
         serverIPEditText.setText(settings.getIPAddress());
 
-        pillow1NicknameEditText.setText(settings.getPillow1Nickname());
-        pillow2NicknameEditText.setText(settings.getPillow2Nickname());
 
-        pillow1LowInflateEditText.setText(String.valueOf(settings.getPillow1LowPressureInterval()));
-        pillow2LowInflateEditText.setText(String.valueOf(settings.getPillow2LowPressureInterval()));
-        pillow1MediumInflateEditText.setText(String.valueOf(settings.getPillow1MediumPressureInterval()));
-        pillow2MediumInflateEditText.setText(String.valueOf(settings.getPillow2MediumPressureInterval()));
-        pillow1HighInflateEditText.setText(String.valueOf(settings.getPillow1HighPressureInterval()));
-        pillow2HighInflateEditText.setText(String.valueOf(settings.getPillow2HighPressureInterval()));
-
+        openSettingsButton.setOnClickListener(view -> {
+            openSettings(view, settings);
+        });
 
         bluetoothService.addListener(() -> runOnUiThread(() -> {
             int newState = bluetoothService.getState();
@@ -114,7 +118,6 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
                 interval = settings.getPillow1HighPressureInterval();
             }
 
-
             String command;
             if (settings.getUseBluetooth()) {
                 command = buildBluetoothCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_1);
@@ -135,7 +138,6 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
                 interval = settings.getPillow1HighPressureInterval();
             }
 
-
             String command;
             if (settings.getUseBluetooth()) {
                 command = buildBluetoothCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_1);
@@ -155,7 +157,6 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
             } else if (pillow2PresetHigh.isChecked()) {
                 interval = settings.getPillow2HighPressureInterval();
             }
-
 
             String command;
             if (settings.getUseBluetooth()) {
@@ -221,86 +222,23 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
             }
         });
 
-        pillow1NicknameEditText.addTextChangedListener(new TextChangedListener<EditText>(pillow1NicknameEditText) {
-            @Override
-            public void onTextChanged(EditText target, Editable s) {
-                String newValue = target.getText().toString();
-                if (!newValue.isEmpty()) settings.setPillow1Nickname(newValue);
-                else settings.setPillow1Nickname("Pillow 1");
-            }
-        });
-
-        pillow2NicknameEditText.addTextChangedListener(new TextChangedListener<EditText>(pillow2NicknameEditText) {
-            @Override
-            public void onTextChanged(EditText target, Editable s) {
-                String newValue = target.getText().toString();
-                if (!newValue.isEmpty()) settings.setPillow2Nickname(newValue);
-                else settings.setPillow2Nickname("Pillow 2");
-            }
-        });
-
-        pillow1LowInflateEditText.addTextChangedListener(new TextChangedListener<EditText>(pillow1LowInflateEditText) {
-            @Override
-            public void onTextChanged(EditText target, Editable s) {
-                String newValue = target.getText().toString();
-                if (!newValue.isEmpty())
-                    settings.setPillow1LowPressureInterval(Integer.parseInt(newValue));
-                else settings.setPillow1LowPressureInterval(1);
-            }
-        });
-
-        pillow2LowInflateEditText.addTextChangedListener(new TextChangedListener<EditText>(pillow2LowInflateEditText) {
-            @Override
-            public void onTextChanged(EditText target, Editable s) {
-                String newValue = target.getText().toString();
-                if (!newValue.isEmpty())
-                    settings.setPillow2LowPressureInterval(Integer.parseInt(newValue));
-                else settings.setPillow2LowPressureInterval(1);
-            }
-        });
-
-        pillow1MediumInflateEditText.addTextChangedListener(new TextChangedListener<EditText>(pillow1MediumInflateEditText) {
-            @Override
-            public void onTextChanged(EditText target, Editable s) {
-                String newValue = target.getText().toString();
-                if (!newValue.isEmpty())
-                    settings.setPillow1MediumPressureInterval(Integer.parseInt(newValue));
-                else settings.setPillow1MediumPressureInterval(2);
-            }
-        });
-
-        pillow2MediumInflateEditText.addTextChangedListener(new TextChangedListener<EditText>(pillow2MediumInflateEditText) {
-            @Override
-            public void onTextChanged(EditText target, Editable s) {
-                String newValue = target.getText().toString();
-                if (!newValue.isEmpty())
-                    settings.setPillow2MediumPressureInterval(Integer.parseInt(newValue));
-                else settings.setPillow2MediumPressureInterval(2);
-            }
-        });
-
-        pillow1HighInflateEditText.addTextChangedListener(new TextChangedListener<EditText>(pillow1HighInflateEditText) {
-            @Override
-            public void onTextChanged(EditText target, Editable s) {
-                String newValue = target.getText().toString();
-                if (!newValue.isEmpty())
-                    settings.setPillow1HighPressureInterval(Integer.parseInt(newValue));
-                else settings.setPillow1HighPressureInterval(3);
-            }
-        });
-
-        pillow2HighInflateEditText.addTextChangedListener(new TextChangedListener<EditText>(pillow2HighInflateEditText) {
-            @Override
-            public void onTextChanged(EditText target, Editable s) {
-                String newValue = target.getText().toString();
-                if (!newValue.isEmpty())
-                    settings.setPillow2HighPressureInterval(Integer.parseInt(newValue));
-                else settings.setPillow2HighPressureInterval(3);
-            }
-        });
-
         //Run functions
         testHttpsServerConnectivity(settings.getIPAddress());
+    }
+
+    private void openSettings(View view, UserSettings settings) {
+        Intent settingsIntent = new Intent(this, SettingsActivity.class);
+        startActivityForResult(settingsIntent, 0);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        pillow_1_label.setText(settings.getPillow1Nickname());
+        pillow_2_label.setText(settings.getPillow2Nickname());
+
+        Log.d("RETURNING", "activity result " + resultCode);
+
     }
 
     private void sendPOSTRequest(String ip, String command) {
