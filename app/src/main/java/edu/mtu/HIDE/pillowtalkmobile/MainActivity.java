@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
     private TextView serverStatusLabel;
     private TextView pillow_1_label;
     private TextView pillow_2_label;
+    private TextView bluetoothStatusLabel;
     private Button pillow1InflateButton;
     private Button pillow1DeflateButton;
     private Button pillow2InflateButton;
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
 
         //initialize UI references
         serverStatusLabel = findViewById(R.id.network_status_label);
+        bluetoothStatusLabel = findViewById(R.id.bluetooth_status_label);
 
         pillow_1_label = findViewById(R.id.pillow_1_label);
         pillow_2_label = findViewById(R.id.pillow_2_label);
@@ -93,19 +95,29 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
             openSettings(view, settings);
         });
 
-        bluetoothService.addListener(() -> runOnUiThread(() -> {
+        bluetoothService.addStateListener(() -> runOnUiThread(() -> {
             int newState = bluetoothService.getState();
             switch (newState) {
                 case BluetoothService.STATE_CONNECTED:
-                    serverStatusLabel.setText("Bluetooth Status: Connected");
+                    bluetoothStatusLabel.setText("Bluetooth: Connected");
                     enableButtonControl();
                     break;
                 case BluetoothService.STATE_NONE:
-                    serverStatusLabel.setText("Bluetooth Status: Not Connected");
+                    bluetoothStatusLabel.setText("Bluetooth: Not Connected");
                     bluetoothSwitch.setChecked(false);
                     disableButtonControl();
                     break;
+                case BluetoothService.STATE_CONNECTING:
+                    bluetoothStatusLabel.setText("Bluetooth: Trying to Connect");
+                    break;
+                case BluetoothService.STATE_LISTEN:
+                    bluetoothSwitch.setText("Bluetooth: Listening for Bluetooth Server");
+                    break;
             }
+        }));
+
+        bluetoothService.addMessageListener(() -> runOnUiThread(() -> {
+            bluetoothStatusLabel.setText("Bluetooth: " + bluetoothService.latestMessage);
         }));
 
         pillow1InflateButton.setOnClickListener(view -> {
@@ -193,6 +205,8 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
             if (!bluetoothSwitch.isChecked()) {
                 settings.setUseBluetooth(false);
                 serverIPEditText.setEnabled(true);
+                bluetoothService.stop();
+                return;
             }
 
             BluetoothDevice bluetoothDevice = bluetoothService.findDevice(BLUETOOTH_DEVICE);
@@ -209,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
                 serverIPEditText.setEnabled(true);
 
                 Log.d("TESTING", "MainActivity - Bluetooth device not found");
-                serverStatusLabel.setText("Server Status: Bluetooth device not found");
+                bluetoothStatusLabel.setText("Bluetooth: Bluetooth device not found");
             }
 
         });
@@ -246,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
 
         if (ip.isEmpty()) return;
 
-        serverStatusLabel.setText("Server Status: Trying to send command");
+        serverStatusLabel.setText("Server: Trying to send command");
 
         String address = "http://" + ip + ":443/command";
         Log.d("TESTING", "Trying: " + address);
@@ -272,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
 
         if (ip.isEmpty()) return;
 
-        serverStatusLabel.setText("Server Status: Trying to Connect");
+        serverStatusLabel.setText("Server: Trying to Connect");
 
         String address1 = "http://" + ip + ":443/server_connection_test"; //external
         Log.d("TESTING", "Trying: " + address1);
@@ -315,10 +329,10 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
     public void testServerConnectionTaskResponse(String results) {
         //200 = Good HTTPS response code
         if (results.equals("200 OK")) {
-            serverStatusLabel.setText("Server Status: Connected");
+            serverStatusLabel.setText("Server: Connected");
             enableButtonControl();
         } else {
-            serverStatusLabel.setText("Server Status: Failed to Connect");
+            serverStatusLabel.setText("Server: Failed to Connect");
             disableButtonControl();
         }
     }
@@ -327,10 +341,10 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
     public void POSTRequestTaskResponse(String results) {
         //200 = Good HTTPS response code
         if (results.equals("200 OK")) {
-            serverStatusLabel.setText("Server Status: Command Executed");
+            serverStatusLabel.setText("Server: Command Executed");
             enableButtonControl();
         } else {
-            serverStatusLabel.setText("Server Status: Failed to Connect");
+            serverStatusLabel.setText("Server: Failed to Connect");
             disableButtonControl();
         }
     }
