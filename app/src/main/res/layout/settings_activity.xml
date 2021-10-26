@@ -1,0 +1,185 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/settings"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:id="@+id/settings_group"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/settings_label"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="20dp"
+                android:text="Settings"
+                android:textSize="30sp" />
+
+            <LinearLayout
+                android:id="@+id/pillow_nickname_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/pillow_1_nickname_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="Pillow 1 Nickname"
+                    android:textSize="20sp" />
+
+                <EditText
+                    android:id="@+id/pillow_1_nickname_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Nickname for pillow 1"
+                    android:inputType="textPersonName" />
+
+                <TextView
+                    android:id="@+id/pillow_2_nickname_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="Pillow 2 Nickname"
+                    android:textSize="20sp" />
+
+                <EditText
+                    android:id="@+id/pillow_2_nickname_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Nickname for pillow 2"
+                    android:inputType="textPersonName" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/pillow_1_pressure_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/pillow_1_pressure_interval_low_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="Pillow 1 Low Pressure Interval (s)"
+                    android:textSize="20sp" />
+
+                <EditText
+                    android:id="@+id/pillow_1_pressure_interval_low_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Low preset interval for pillow inflation/deflation"
+                    android:inputType="number"
+                    android:numeric="integer" />
+
+                <TextView
+                    android:id="@+id/pillow_1_pressure_interval_medium_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="Pillow 1 Medium Pressure Interval (s)"
+                    android:textSize="20sp" />
+
+                <EditText
+                    android:id="@+id/pillow_1_pressure_interval_medium_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Medium preset interval for pillow inflation/deflation"
+                    android:inputType="number"
+                    android:numeric="integer" />
+
+                <TextView
+                    android:id="@+id/pillow_1_pressure_interval_high_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="Pillow 1 High Pressure Interval (s)"
+                    android:textSize="20sp" />
+
+                <EditText
+                    android:id="@+id/pillow_1_pressure_interval_high_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="High preset interval for pillow inflation/deflation"
+                    android:inputType="number"
+                    android:numeric="integer" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/pillow_2_pressure_group"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+
+                <TextView
+                    android:id="@+id/pillow_2_pressure_interval_low_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="Pillow 2 Low Pressure Interval (s)"
+                    android:textSize="20sp" />
+
+                <EditText
+                    android:id="@+id/pillow_2_pressure_interval_low_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Low preset interval for pillow inflation/deflation"
+                    android:inputType="number"
+                    android:numeric="integer" />
+
+                <TextView
+                    android:id="@+id/pillow_2_pressure_interval_medium_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="Pillow 2 Medium Pressure Interval (s)"
+                    android:textSize="20sp" />
+
+                <EditText
+                    android:id="@+id/pillow_2_pressure_interval_medium_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Medium preset interval for pillow inflation/deflation"
+                    android:inputType="number"
+                    android:numeric="integer" />
+
+                <TextView
+                    android:id="@+id/pillow_2_pressure_interval_high_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="Pillow 2 High Pressure Interval (s)"
+                    android:textSize="20sp" />
+
+                <EditText
+                    android:id="@+id/pillow_2_pressure_interval_high_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="High preset interval for pillow inflation/deflation"
+                    android:inputType="number"
+                    android:numeric="integer" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </FrameLayout>
+</LinearLayout>
