@@ -1,7 +1,6 @@
 package edu.mtu.HIDE.pillowtalkmobile;
 
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
