@@ -1,7 +1,6 @@
 package edu.mtu.HIDE.pillowtalkmobile;
 
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -18,13 +17,16 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.UUID;
+
 public class MainActivity extends AppCompatActivity implements TestServerConnectionAsyncResponse, POSTRequestAsyncResponse {
 
     private static final String BLUETOOTH_DEVICE = "pi";
+    private static final UUID PILLOWTALK_UUID = UUID.fromString("79bf39f7-54a4-4015-b27e-0b4be44b506d");
 
     //global references
     BluetoothService bluetoothService;
-
+    SharedPreferences sharedPreferences;
     //UI references
     private TextView serverStatusLabel;
     private TextView pillow_1_label;
@@ -41,8 +43,6 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
     private RadioButton pillow2PresetMedium;
     private RadioButton pillow2PresetHigh;
     private ImageButton openSettingsButton;
-
-    SharedPreferences sharedPreferences;
     private UserSettings settings;
 
     @Override
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         settings = new UserSettings(this);
 
         //global references
-        bluetoothService = new BluetoothService(this);
+        bluetoothService = new BluetoothService(this, PILLOWTALK_UUID);
 
         //initialize UI references
         serverStatusLabel = findViewById(R.id.network_status_label);
@@ -91,9 +91,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         serverIPEditText.setText(settings.getIPAddress());
 
 
-        openSettingsButton.setOnClickListener(view -> {
-            openSettings(view, settings);
-        });
+        openSettingsButton.setOnClickListener(view -> openSettings(view, settings));
 
         bluetoothService.addStateListener(() -> runOnUiThread(() -> {
             int newState = bluetoothService.getState();
@@ -116,9 +114,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
             }
         }));
 
-        bluetoothService.addMessageListener(() -> runOnUiThread(() -> {
-            bluetoothStatusLabel.setText("Bluetooth: " + bluetoothService.latestMessage);
-        }));
+        bluetoothService.addMessageListener(() -> runOnUiThread(() -> bluetoothStatusLabel.setText("Bluetooth: " + bluetoothService.latestMessage)));
 
         pillow1InflateButton.setOnClickListener(view -> {
             int interval = 0;
