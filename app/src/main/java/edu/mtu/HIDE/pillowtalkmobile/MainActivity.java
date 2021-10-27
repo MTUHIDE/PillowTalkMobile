@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         pillow2PresetMedium = findViewById(R.id.pillow_2_preset_medium);
         pillow2PresetHigh = findViewById(R.id.pillow_2_preset_high);
 
-        openSettingsButton = findViewById(R.id.openSettingsButton);
+        openSettingsButton = findViewById(R.id.floatingSettingsButton);
 
 
         bluetoothSwitch.setChecked(settings.getUseBluetooth());

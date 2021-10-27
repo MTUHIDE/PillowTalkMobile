@@ -271,6 +271,7 @@
                         android:ems="10"
                         android:hint="e.g. 192.168.x.y"
                         android:inputType="number" />
+
                 </LinearLayout>
 
             </LinearLayout>
@@ -278,14 +279,17 @@
         </LinearLayout>
     </ScrollView>
 
-    <ImageButton
-        android:id="@+id/openSettingsButton"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingSettingsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="42dp"
-        android:layout_marginBottom="42dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginBottom="48dp"
+        android:clickable="true"
+        android:minWidth="48dp"
+        android:minHeight="48dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_preferences" />
+        app:srcCompat="@drawable/ic_baseline_settings_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
