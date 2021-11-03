@@ -229,12 +229,13 @@
 
                     <TextView
                         android:id="@+id/satus_lable"
+                        style="@style/Widget.MaterialComponents.TextView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="15dp"
                         android:fontFamily="sans-serif"
                         android:text="Status"
-                        android:textColor="@android:color/white" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
                     <TextView
                         android:id="@+id/network_status_label"

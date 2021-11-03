@@ -21,7 +21,7 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements TestServerConnectionAsyncResponse, POSTRequestAsyncResponse {
 
-    private static final String BLUETOOTH_DEVICE = "pi";
+    private static final String BLUETOOTH_DEVICE = "raspberrypi";
     private static final UUID PILLOWTALK_UUID = UUID.fromString("79bf39f7-54a4-4015-b27e-0b4be44b506d");
 
     //global references
@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
                 return;
             }
 
-            BluetoothDevice bluetoothDevice = bluetoothService.findDevice(BLUETOOTH_DEVICE);
+            BluetoothDevice bluetoothDevice = bluetoothService.findFirstDevice(PILLOWTALK_UUID);
             if (bluetoothDevice != null) {
                 settings.setUseBluetooth(b);
                 serverIPEditText.setEnabled(!settings.getUseBluetooth()); //disable if using bluetooth
