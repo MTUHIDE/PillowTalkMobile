@@ -54,6 +54,7 @@ public class BluetoothService {
             }
         }
     };
+
     public String latestMessage = "";
     private ConnectedThread mConnectedThread;
     private ConnectThread mConnectThread;
@@ -129,7 +130,8 @@ public class BluetoothService {
     /**
      * find the first device with the given name
      *
-     * @param name String
+     * @param name name to check against
+     * @return the first device with the name
      */
     public BluetoothDevice findFirstDevice(String name) {
         Log.d(TAG, "findFirstDevice: getting bonded devices");
@@ -153,9 +155,10 @@ public class BluetoothService {
     }
 
     /**
-     *  finds the first device with the given uuid
-     * @param uuid
-     * @return
+     *  Finds the first device with the given uuid
+     *
+     * @param uuid uuid to check against
+     * @return the first device with the uuid
      */
     public BluetoothDevice findFirstDevice(UUID uuid) {
         Log.d(TAG, "findFirstDevice: getting bonded devices");
@@ -166,13 +169,11 @@ public class BluetoothService {
             Log.d(TAG, "findDevice: searching for device with uuid \"" + uuid.toString() + "\"");
             for (BluetoothDevice bluetoothDevice : devices) {
                 for (ParcelUuid parcelUuid: bluetoothDevice.getUuids()) {
-
                     if (parcelUuid.getUuid().equals(uuid)) {
                         Log.d(TAG, "findDevice: found device with address " + bluetoothDevice.getAddress() + " name " + bluetoothDevice.getName());
                         return bluetoothDevice;
                     }
                 }
-
             }
             Log.d(TAG, "findDevice: no device with uuid \"" + uuid.toString() + "\" found");
         } else {
@@ -182,9 +183,14 @@ public class BluetoothService {
         return null;
     }
 
+    /**
+     * finds every device with the given UUID
+     * @param uuid uuid to check against
+     * @return list of BluetoothDevices
+     */
     public List<BluetoothDevice> findDevices(UUID uuid) {
         Log.d(TAG, "findDevices: getting bonded devices");
-        List<BluetoothDevice> list = new ArrayList<>();
+        List<BluetoothDevice> uuidList = new ArrayList<>();
 
         if (bluetoothAdapter != null) {
             Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
@@ -192,15 +198,13 @@ public class BluetoothService {
             Log.d(TAG, "findDevice: searching for device with uuid \"" + uuid.toString() + "\"");
             for (BluetoothDevice bluetoothDevice : devices) {
                 for (ParcelUuid parcelUuid: bluetoothDevice.getUuids()) {
-
                     if (parcelUuid.getUuid().equals(uuid)) {
                         Log.d(TAG, "findDevices: found device with address " + bluetoothDevice.getAddress() + " name " + bluetoothDevice.getName());
-                        list.add(bluetoothDevice);
+                        uuidList.add(bluetoothDevice);
                     }
                 }
-
             }
-            if(list.isEmpty()) {
+            if(uuidList.isEmpty()) {
                 Log.d(TAG, "findDevices: no device with uuid \"" + uuid.toString() + "\" found");
             }
 
@@ -209,8 +213,41 @@ public class BluetoothService {
             Log.d(TAG, "findDevices() - bluetooth adapter not found");
         }
 
-        return list;
+        return uuidList;
     }
+
+    /**
+     * finds every device with the given name
+     *
+     * @param name name to check against
+     * @return list of bluetooth devices
+     */
+    public List<BluetoothDevice> findDevices(String name) {
+        Log.d(TAG, "findDevices: getting bonded devices");
+        List<BluetoothDevice> nameList = new ArrayList<>();
+
+        if (bluetoothAdapter != null) {
+            Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
+
+            Log.d(TAG, "findDevice: searching for device with uuid \"" + name + "\"");
+            for (BluetoothDevice bluetoothDevice : devices) {
+                if (bluetoothDevice.getName().equals(name)) {
+                    Log.d(TAG, "findDevice: found device with address " + bluetoothDevice.getAddress());
+                    nameList.add(bluetoothDevice);
+                }
+            }
+            if(nameList.isEmpty()) {
+                Log.d(TAG, "findDevices: no device with name \"" + name + "\" found");
+            }
+
+
+        } else {
+            Log.d(TAG, "findDevices() - bluetooth adapter not found");
+        }
+
+        return nameList;
+    }
+
 
     /**
      * connects to the given bluetooth device
