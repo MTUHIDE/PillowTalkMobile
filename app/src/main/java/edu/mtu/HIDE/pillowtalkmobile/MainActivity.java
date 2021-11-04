@@ -17,6 +17,8 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements TestServerConnectionAsyncResponse, POSTRequestAsyncResponse {
@@ -204,6 +206,12 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
                 bluetoothService.stop();
                 return;
             }
+
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle("Pick device")
+                    .setPositiveButton("Ok", null)
+                    .show();
+
 
             BluetoothDevice bluetoothDevice = bluetoothService.findFirstDevice(PILLOWTALK_UUID);
             if (bluetoothDevice != null) {
