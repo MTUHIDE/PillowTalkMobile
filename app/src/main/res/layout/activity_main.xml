@@ -203,6 +203,13 @@
                             android:text="High"
                             android:textSize="16sp" />
                     </RadioGroup>
+
+                    <Button
+                        android:id="@+id/stop_all_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="Stop" />
                 </LinearLayout>
 
             </LinearLayout>
