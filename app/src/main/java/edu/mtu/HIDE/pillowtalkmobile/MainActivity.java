@@ -3,6 +3,7 @@ package edu.mtu.HIDE.pillowtalkmobile;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
@@ -275,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
 
         POSTRequestTask postRequestTask = new POSTRequestTask();
         postRequestTask.delegate = this;
-        postRequestTask.execute(address, command);
+        postRequestTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, address, command);
     }
 
     private String buildPOSTRequestCommand(PillowBaseCommand base, String baseParameter, PillowID pillowID) {
@@ -302,7 +303,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         //must initialize new instance of task
         TestServerConnectionTask testServerConnectionTask = new TestServerConnectionTask();
         testServerConnectionTask.delegate = this;
-        testServerConnectionTask.execute(address1);
+        testServerConnectionTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, address1);
     }
 
     void enableButtonControl() {
