@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.ParcelUuid;
 import android.util.Log;
 
 import java.io.IOException;
@@ -21,32 +22,14 @@ import java.util.UUID;
 
 public class BluetoothService {
 
-    private final List<StateListener> stateListeners = new ArrayList<>();
-    private final List<MessageListener> messageListeners = new ArrayList<>();
-
-    public interface StateListener {
-        void onStateChange();
-    }
-    public interface MessageListener {
-        void onNewMessage();
-    }
-
-    public void addStateListener(StateListener toAdd) {
-        stateListeners.add(toAdd);
-    }
-    public void addMessageListener(MessageListener toAdd) {
-        messageListeners.add(toAdd);
-    }
-
     public static final int STATE_NONE = 0;
     public static final int STATE_LISTEN = 1;
     public static final int STATE_CONNECTING = 2;
     public static final int STATE_CONNECTED = 3;
-
-    public String latestMessage = "";
-
     private static final String TAG = "BluetoothService";
-    private final static UUID PILLOWTALK_UUID = UUID.fromString("79bf39f7-54a4-4015-b27e-0b4be44b506d");
+    private final List<StateListener> stateListeners = new ArrayList<>();
+    private final List<MessageListener> messageListeners = new ArrayList<>();
+    private final UUID uuid;
     private final BluetoothAdapter bluetoothAdapter;
     private final Context mContext;
     private final BroadcastReceiver bluetoothStateReceiver = new BroadcastReceiver() {
@@ -71,20 +54,32 @@ public class BluetoothService {
             }
         }
     };
+
+    public String latestMessage = "";
     private ConnectedThread mConnectedThread;
     private ConnectThread mConnectThread;
     private AcceptThread mAcceptThread;
     private int mState;
-
     /**
      * BluetoothService constructor
+     *
      * @param c Context of the mainActivity
      */
-    public BluetoothService(Context c) {
+    public BluetoothService(Context c, UUID uuid) {
+        this.uuid = uuid;
         mContext = c;
+
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         Log.d("TESTING", "BluetoothService Const - " + bluetoothAdapter);
         mState = STATE_NONE;
+    }
+
+    public void addStateListener(StateListener toAdd) {
+        stateListeners.add(toAdd);
+    }
+
+    public void addMessageListener(MessageListener toAdd) {
+        messageListeners.add(toAdd);
     }
 
     /**
@@ -97,6 +92,7 @@ public class BluetoothService {
     /**
      * Sets the mState
      * only send valid states
+     *
      * @param state
      */
     private void setState(int state) {
@@ -132,14 +128,15 @@ public class BluetoothService {
     }
 
     /**
-     * connect to the device with the given name
-     * @param name String
+     * find the first device with the given name
+     *
+     * @param name name to check against
+     * @return the first device with the name
      */
-    public BluetoothDevice findDevice(String name) {
-        Log.d(TAG, "findDevice: getting bonded devices");
+    public BluetoothDevice findFirstDevice(String name) {
+        Log.d(TAG, "findFirstDevice: getting bonded devices");
 
-        if (bluetoothAdapter != null)
-        {
+        if (bluetoothAdapter != null) {
             Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
 
             Log.d(TAG, "findDevice: searching for device with name \"" + name + "\"");
@@ -150,9 +147,7 @@ public class BluetoothService {
                 }
             }
             Log.d(TAG, "findDevice: no device with name \"" + name + "\" found");
-        }
-        else
-        {
+        } else {
             Log.d(TAG, "findDevice() - bluetooth adapter not found");
         }
 
@@ -160,7 +155,103 @@ public class BluetoothService {
     }
 
     /**
+     *  Finds the first device with the given uuid
+     *
+     * @param uuid uuid to check against
+     * @return the first device with the uuid
+     */
+    public BluetoothDevice findFirstDevice(UUID uuid) {
+        Log.d(TAG, "findFirstDevice: getting bonded devices");
+
+        if (bluetoothAdapter != null) {
+            Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
+
+            Log.d(TAG, "findDevice: searching for device with uuid \"" + uuid.toString() + "\"");
+            for (BluetoothDevice bluetoothDevice : devices) {
+                for (ParcelUuid parcelUuid: bluetoothDevice.getUuids()) {
+                    if (parcelUuid.getUuid().equals(uuid)) {
+                        Log.d(TAG, "findDevice: found device with address " + bluetoothDevice.getAddress() + " name " + bluetoothDevice.getName());
+                        return bluetoothDevice;
+                    }
+                }
+            }
+            Log.d(TAG, "findDevice: no device with uuid \"" + uuid.toString() + "\" found");
+        } else {
+            Log.d(TAG, "findDevice() - bluetooth adapter not found");
+        }
+
+        return null;
+    }
+
+    /**
+     * finds every device with the given UUID
+     * @param uuid uuid to check against
+     * @return list of BluetoothDevices
+     */
+    public List<BluetoothDevice> findDevices(UUID uuid) {
+        Log.d(TAG, "findDevices: getting bonded devices");
+        List<BluetoothDevice> uuidList = new ArrayList<>();
+
+        if (bluetoothAdapter != null) {
+            Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
+
+            Log.d(TAG, "findDevice: searching for device with uuid \"" + uuid.toString() + "\"");
+            for (BluetoothDevice bluetoothDevice : devices) {
+                for (ParcelUuid parcelUuid: bluetoothDevice.getUuids()) {
+                    if (parcelUuid.getUuid().equals(uuid)) {
+                        Log.d(TAG, "findDevices: found device with address " + bluetoothDevice.getAddress() + " name " + bluetoothDevice.getName());
+                        uuidList.add(bluetoothDevice);
+                    }
+                }
+            }
+            if(uuidList.isEmpty()) {
+                Log.d(TAG, "findDevices: no device with uuid \"" + uuid.toString() + "\" found");
+            }
+
+
+        } else {
+            Log.d(TAG, "findDevices() - bluetooth adapter not found");
+        }
+
+        return uuidList;
+    }
+
+    /**
+     * finds every device with the given name
+     *
+     * @param name name to check against
+     * @return list of bluetooth devices
+     */
+    public List<BluetoothDevice> findDevices(String name) {
+        Log.d(TAG, "findDevices: getting bonded devices");
+        List<BluetoothDevice> nameList = new ArrayList<>();
+
+        if (bluetoothAdapter != null) {
+            Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
+
+            Log.d(TAG, "findDevice: searching for device with uuid \"" + name + "\"");
+            for (BluetoothDevice bluetoothDevice : devices) {
+                if (bluetoothDevice.getName().equals(name)) {
+                    Log.d(TAG, "findDevice: found device with address " + bluetoothDevice.getAddress());
+                    nameList.add(bluetoothDevice);
+                }
+            }
+            if(nameList.isEmpty()) {
+                Log.d(TAG, "findDevices: no device with name \"" + name + "\" found");
+            }
+
+
+        } else {
+            Log.d(TAG, "findDevices() - bluetooth adapter not found");
+        }
+
+        return nameList;
+    }
+
+
+    /**
      * connects to the given bluetooth device
+     *
      * @param bluetoothDevice BluetoothDevice
      */
     public synchronized void connect(BluetoothDevice bluetoothDevice) {
@@ -186,7 +277,6 @@ public class BluetoothService {
             Log.e(TAG, "bluetoothDevice is null");
         }
     }
-
 
     /**
      * Send message to connect device
@@ -281,6 +371,14 @@ public class BluetoothService {
         mConnectedThread.start();
     }
 
+    public interface StateListener {
+        void onStateChange();
+    }
+
+    public interface MessageListener {
+        void onNewMessage();
+    }
+
     private class AcceptThread extends Thread {
         private final BluetoothServerSocket mmServerSocket;
 
@@ -289,8 +387,7 @@ public class BluetoothService {
 
             // Create a new listening server socket
             try {
-                tmp = bluetoothAdapter.listenUsingRfcommWithServiceRecord("PILLOWTALKMOBAL",
-                        PILLOWTALK_UUID);
+                tmp = bluetoothAdapter.listenUsingRfcommWithServiceRecord("PILLOWTALKMOBAL", uuid);
             } catch (IOException e) {
                 Log.e(TAG, "AcceptThread: listen() failed", e);
             }
@@ -308,18 +405,18 @@ public class BluetoothService {
                             switch (mState) {
                                 case STATE_LISTEN:
                                     // Situation normal. Start the connected thread.
-                                    Log.d(TAG,"state: STATE_LISTEN ");
+                                    Log.d(TAG, "state: STATE_LISTEN ");
                                     connected(socket);
                                     break;
                                 case STATE_CONNECTING:
-                                    Log.d(TAG,"state: STATE_CONNECTING ");
+                                    Log.d(TAG, "state: STATE_CONNECTING ");
                                     break;
                                 case STATE_NONE:
-                                    Log.d(TAG,"state: STATE_NONE ");
+                                    Log.d(TAG, "state: STATE_NONE ");
                                     break;
                                 case STATE_CONNECTED:
                                     // Either not ready or already connected. Terminate new socket.
-                                    Log.d(TAG,"state: STATE_CONNECTED ");
+                                    Log.d(TAG, "state: STATE_CONNECTED ");
                                     try {
                                         socket.close();
                                     } catch (IOException e) {
@@ -354,7 +451,7 @@ public class BluetoothService {
         public ConnectThread(BluetoothDevice bluetoothDevice) {
             BluetoothSocket tmp = null;
             try {
-                tmp = bluetoothDevice.createRfcommSocketToServiceRecord(PILLOWTALK_UUID);
+                tmp = bluetoothDevice.createRfcommSocketToServiceRecord(uuid);
             } catch (IOException e) {
                 Log.e(TAG, "ConnectThread: connection failed", e);
             }

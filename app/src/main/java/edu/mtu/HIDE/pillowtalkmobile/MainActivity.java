@@ -17,18 +17,22 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.UUID;
+
 public class MainActivity extends AppCompatActivity implements TestServerConnectionAsyncResponse, POSTRequestAsyncResponse {
 
-    private static final String BLUETOOTH_DEVICE = "pi";
+    private static final String BLUETOOTH_DEVICE = "raspberrypi";
+    private static final UUID PILLOWTALK_UUID = UUID.fromString("79bf39f7-54a4-4015-b27e-0b4be44b506d");
 
     //global references
     BluetoothService bluetoothService;
-
+    SharedPreferences sharedPreferences;
     //UI references
     private TextView serverStatusLabel;
     private TextView pillow_1_label;
     private TextView pillow_2_label;
     private TextView bluetoothStatusLabel;
+    private Button stopAllButton;
     private Button pillow1InflateButton;
     private Button pillow1DeflateButton;
     private Button pillow2InflateButton;
@@ -40,8 +44,6 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
     private RadioButton pillow2PresetMedium;
     private RadioButton pillow2PresetHigh;
     private ImageButton openSettingsButton;
-
-    SharedPreferences sharedPreferences;
     private UserSettings settings;
 
     @Override
@@ -53,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         settings = new UserSettings(this);
 
         //global references
-        bluetoothService = new BluetoothService(this);
+        bluetoothService = new BluetoothService(this, PILLOWTALK_UUID);
 
         //initialize UI references
         serverStatusLabel = findViewById(R.id.network_status_label);
@@ -81,7 +83,9 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         pillow2PresetMedium = findViewById(R.id.pillow_2_preset_medium);
         pillow2PresetHigh = findViewById(R.id.pillow_2_preset_high);
 
-        openSettingsButton = findViewById(R.id.openSettingsButton);
+        openSettingsButton = findViewById(R.id.floatingSettingsButton);
+
+        stopAllButton = findViewById(R.id.stop_all_button);
 
 
         bluetoothSwitch.setChecked(settings.getUseBluetooth());
@@ -90,9 +94,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         serverIPEditText.setText(settings.getIPAddress());
 
 
-        openSettingsButton.setOnClickListener(view -> {
-            openSettings(view, settings);
-        });
+        openSettingsButton.setOnClickListener(view -> openSettings(view, settings));
 
         bluetoothService.addStateListener(() -> runOnUiThread(() -> {
             int newState = bluetoothService.getState();
@@ -115,9 +117,16 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
             }
         }));
 
-        bluetoothService.addMessageListener(() -> runOnUiThread(() -> {
-            bluetoothStatusLabel.setText("Bluetooth: " + bluetoothService.latestMessage);
-        }));
+        bluetoothService.addMessageListener(() -> runOnUiThread(() -> bluetoothStatusLabel.setText("Bluetooth: " + bluetoothService.latestMessage)));
+
+        stopAllButton.setOnClickListener(view -> {
+            if (bluetoothSwitch.isChecked()) {
+                bluetoothService.write("STOP_ALL");
+            }
+
+            // TODO add web server support for stop all button
+
+        });
 
         pillow1InflateButton.setOnClickListener(view -> {
             int interval = 0;
@@ -208,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
                 return;
             }
 
-            BluetoothDevice bluetoothDevice = bluetoothService.findDevice(BLUETOOTH_DEVICE);
+            BluetoothDevice bluetoothDevice = bluetoothService.findFirstDevice(PILLOWTALK_UUID);
             if (bluetoothDevice != null) {
                 settings.setUseBluetooth(b);
                 serverIPEditText.setEnabled(!settings.getUseBluetooth()); //disable if using bluetooth
@@ -255,13 +264,13 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
     }
 
     private void sendPOSTRequest(String ip, String command) {
-        disableButtonControl();
+        // disableButtonControl();
 
         if (ip.isEmpty()) return;
 
         serverStatusLabel.setText("Server: Trying to send command");
 
-        String address = "http://" + ip + ":443/command";
+        String address = "http://" + ip + ":4433/command";
         Log.d("TESTING", "Trying: " + address);
 
         POSTRequestTask postRequestTask = new POSTRequestTask();
@@ -287,7 +296,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
 
         serverStatusLabel.setText("Server: Trying to Connect");
 
-        String address1 = "http://" + ip + ":443/server_connection_test"; //external
+        String address1 = "http://" + ip + ":4433/server_connection_test"; //external
         Log.d("TESTING", "Trying: " + address1);
 
         //must initialize new instance of task
@@ -308,6 +317,8 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         pillow2PresetLow.setEnabled(true);
         pillow2PresetMedium.setEnabled(true);
         pillow2PresetHigh.setEnabled(true);
+
+        stopAllButton.setEnabled(true);
     }
 
     void disableButtonControl() {
@@ -322,6 +333,8 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         pillow2PresetLow.setEnabled(false);
         pillow2PresetMedium.setEnabled(false);
         pillow2PresetHigh.setEnabled(false);
+
+        stopAllButton.setEnabled(false);
     }
 
     @Override
@@ -341,7 +354,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         //200 = Good HTTPS response code
         if (results.equals("200 OK")) {
             serverStatusLabel.setText("Server: Command Executed");
-            enableButtonControl();
+            // enableButtonControl();
         } else {
             serverStatusLabel.setText("Server: Failed to Connect");
             disableButtonControl();
