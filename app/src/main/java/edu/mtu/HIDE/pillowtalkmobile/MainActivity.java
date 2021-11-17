@@ -1,6 +1,7 @@
 package edu.mtu.HIDE.pillowtalkmobile;
 
 import android.bluetooth.BluetoothDevice;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,17 +9,23 @@ import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements TestServerConnectionAsyncResponse, POSTRequestAsyncResponse {
@@ -211,37 +218,63 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         });
 
         //Add UI listeners
-        bluetoothSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
-            if (!bluetoothSwitch.isChecked()) {
-                settings.setUseBluetooth(false);
-                serverIPEditText.setEnabled(true);
-                bluetoothService.stop();
-                return;
+        bluetoothSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            private void connectTo(BluetoothDevice bluetoothDevice, boolean checked) {
+                if (bluetoothDevice != null) {
+                    settings.setUseBluetooth(checked);
+                    serverIPEditText.setEnabled(!settings.getUseBluetooth()); //disable if using bluetooth
+
+                    bluetoothService.enableBluetooth();
+                    bluetoothService.connect(bluetoothDevice);
+                    Log.d("TESTING", "mainactivity getting bluetooth state: " + bluetoothService.getState());
+                } else {
+                    bluetoothSwitch.setChecked(false);
+                    settings.setUseBluetooth(false);
+                    serverIPEditText.setEnabled(true);
+
+                    Log.d("TESTING", "MainActivity - Bluetooth device not found");
+                    bluetoothStatusLabel.setText("Bluetooth: Bluetooth device not found");
+                }
             }
 
-            new MaterialAlertDialogBuilder(this)
-                    .setTitle("Pick device")
-                    .setPositiveButton("Ok", null)
-                    .show();
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                if (!bluetoothSwitch.isChecked()) {
+                    settings.setUseBluetooth(false);
+                    serverIPEditText.setEnabled(true);
+                    bluetoothService.stop();
+                    return;
+                }
 
+                List<BluetoothDevice> devices = bluetoothService.findDevices(PILLOWTALK_UUID);
 
-            BluetoothDevice bluetoothDevice = bluetoothService.findFirstDevice(PILLOWTALK_UUID);
-            if (bluetoothDevice != null) {
-                settings.setUseBluetooth(b);
-                serverIPEditText.setEnabled(!settings.getUseBluetooth()); //disable if using bluetooth
+                if (devices.size() > 1) {
+                    String[] deviceNames = new String[devices.size()];
+                    for (int i = 0; i < devices.size(); i++) {
+                        deviceNames[i] = devices.get(i).getName();
+                    }
 
-                bluetoothService.enableBluetooth();
-                bluetoothService.connect(bluetoothDevice);
-                Log.d("TESTING", "mainactivity getting bluetooth state: " + bluetoothService.getState());
-            } else {
-                bluetoothSwitch.setChecked(false);
-                settings.setUseBluetooth(false);
-                serverIPEditText.setEnabled(true);
+                    new MaterialAlertDialogBuilder(MainActivity.this)
+                            .setTitle("Pick device")
+                            .setNegativeButton("Cancel", null)
+                            .setSingleChoiceItems(deviceNames, -1, (dialogInterface, i) -> {
+                                ListView lv = ((AlertDialog) dialogInterface).getListView();
+                                lv.setTag(new Integer(i));
+                            })
+                            .setPositiveButton("Connect", (dialogInterface, i) -> {
+                                ListView listView = ((AlertDialog) dialogInterface).getListView();
+                                Integer selected = (Integer) listView.getTag();
+                                if (selected != null) {
+                                    connectTo(devices.get(selected), checked);
+                                }
+                            })
+                            .show();
 
-                Log.d("TESTING", "MainActivity - Bluetooth device not found");
-                bluetoothStatusLabel.setText("Bluetooth: Bluetooth device not found");
+                } else {
+                    connectTo(devices.get(0), checked);
+                }
             }
-
         });
 
         serverIPEditText.addTextChangedListener(new TextChangedListener<EditText>(serverIPEditText) {
