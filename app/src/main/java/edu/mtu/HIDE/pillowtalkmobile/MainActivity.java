@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
 
         stopAllButton = findViewById(R.id.stop_all_button);
 
-
+        settings.setUseBluetooth(false);// BAD FIX
         bluetoothSwitch.setChecked(settings.getUseBluetooth());
 
         serverIPEditText.setEnabled(!settings.getUseBluetooth()); //disable if using bluetooth
@@ -260,8 +260,8 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
                             .setTitle("Pick device")
                             .setNegativeButton("Cancel", null)
                             .setSingleChoiceItems(deviceNames, -1, (dialogInterface, i) -> {
-                                ListView lv = ((AlertDialog) dialogInterface).getListView();
-                                lv.setTag(new Integer(i));
+                                ListView listView = ((AlertDialog) dialogInterface).getListView();
+                                listView.setTag(i);
                             })
                             .setPositiveButton("Connect", (dialogInterface, i) -> {
                                 ListView listView = ((AlertDialog) dialogInterface).getListView();
