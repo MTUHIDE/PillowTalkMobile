@@ -200,6 +200,7 @@ public class BluetoothService {
             Log.d(TAG, "findDevice: searching for device with uuid \"" + uuid.toString() + "\"");
             for (BluetoothDevice bluetoothDevice : devices) {
                 for (ParcelUuid parcelUuid: bluetoothDevice.getUuids()) {
+                    if (bluetoothDevice.getUuids() == null) continue;
                     if (parcelUuid.getUuid().equals(uuid)) {
                         Log.d(TAG, "findDevices: found device with address " + bluetoothDevice.getAddress() + " name " + bluetoothDevice.getName());
                         uuidList.add(bluetoothDevice);
