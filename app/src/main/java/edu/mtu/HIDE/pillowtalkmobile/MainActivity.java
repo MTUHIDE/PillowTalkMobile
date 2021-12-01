@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -135,6 +136,8 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
             }
 
             // TODO add web server support for stop all button
+            else
+                Toast.makeText(this, "Stop button is unavailable in server mode", Toast.LENGTH_LONG).show();
 
         });
 
