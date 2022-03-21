@@ -13,7 +13,6 @@ public class TestServerConnectionTask extends AsyncTask<String, Integer, String>
     protected String doInBackground(String... urls) {
         try
         {
-            //URL url = new URL("http://47.6.26.69:443/server_connection_test");
             URL url = new URL(urls[0]);
             HttpURLConnection http = (HttpURLConnection)url.openConnection();
             http.setConnectTimeout(5000);

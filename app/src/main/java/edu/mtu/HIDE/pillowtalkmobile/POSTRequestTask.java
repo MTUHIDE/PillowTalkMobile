@@ -12,19 +12,33 @@ public class POSTRequestTask extends AsyncTask<String, Integer, String> {
 
     POSTRequestAsyncResponse delegate = null;
 
+    /**
+     *
+     * @param postData Elements we need to pass in to do task. First parameter should be the url,
+     *                 second should be the command we generate.
+     * @return
+     */
     protected String doInBackground(String... postData) {
         try
         {
             URL url = new URL(postData[0]);
             String command = postData[1];
+            if (command.equals("stop")) {
+                HttpURLConnection http = (HttpURLConnection)url.openConnection();
+                http.setRequestMethod("POST");
+                http.setConnectTimeout(5000);
 
+                return http.getResponseCode() + " " + http.getResponseMessage();
+            }
+
+            // 141.219.123.159
             //URL url = new URL("http://47.6.26.69:443/command");
 
             HttpURLConnection http = (HttpURLConnection)url.openConnection();
             http.setRequestMethod("POST");
             http.setDoOutput(true);
             http.setConnectTimeout(5000);
-            http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            http.setRequestProperty("Content-Type", "application/json");
 
             //String data = "command=inflate%20cushion_1%206";
             byte[] out = command.getBytes(StandardCharsets.UTF_8);

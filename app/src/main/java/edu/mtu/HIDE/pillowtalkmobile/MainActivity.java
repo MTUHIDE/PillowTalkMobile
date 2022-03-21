@@ -38,19 +38,23 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         int inflate;
         int deflate;
 
-        private PillowID(int inflate, int deflate)
+        PillowID(int inflate, int deflate)
         {
             this.inflate = inflate;
             this.deflate = deflate;
         }
     }
 
-    private static final String BLUETOOTH_DEVICE = "raspberrypi";
+    public enum PillowBaseCommand {
+        inflate,
+        deflate
+    }
+
     private static final UUID PILLOWTALK_UUID = UUID.fromString("79bf39f7-54a4-4015-b27e-0b4be44b506d");
 
     //global references
     BluetoothService bluetoothService;
-    SharedPreferences sharedPreferences;
+
     //UI references
     private TextView serverStatusLabel;
     private TextView pillow_1_label;
@@ -146,12 +150,9 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         stopAllButton.setOnClickListener(view -> {
             if (bluetoothSwitch.isChecked()) {
                 bluetoothService.write("STOP_ALL");
+            } else {
+                stopAllPOST(settings.getIPAddress());
             }
-
-            // TODO add web server support for stop all button
-            else
-                Toast.makeText(this, "Stop button is unavailable in server mode", Toast.LENGTH_LONG).show();
-
         });
 
         pillow1InflateButton.setOnClickListener(view -> {
@@ -169,8 +170,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
                 command = buildBluetoothCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_1);
                 bluetoothService.write(command);
             } else {
-                command = buildPOSTRequestCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_1);
-                sendPOSTRequest(settings.getIPAddress(), command);
+                sendPOSTRequest(settings.getIPAddress(), PillowBaseCommand.inflate, interval, PillowID.cushion_1);
             }
         });
 
@@ -189,8 +189,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
                 command = buildBluetoothCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_1);
                 bluetoothService.write(command);
             } else {
-                command = buildPOSTRequestCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_1);
-                sendPOSTRequest(settings.getIPAddress(), command);
+                sendPOSTRequest(settings.getIPAddress(), PillowBaseCommand.deflate, interval, PillowID.cushion_1);
             }
         });
 
@@ -209,8 +208,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
                 command = buildBluetoothCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_2);
                 bluetoothService.write(command);
             } else {
-                command = buildPOSTRequestCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_2);
-                sendPOSTRequest(settings.getIPAddress(), command);
+                sendPOSTRequest(settings.getIPAddress(), PillowBaseCommand.inflate, interval, PillowID.cushion_2);
             }
         });
 
@@ -229,8 +227,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
                 command = buildBluetoothCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_2);
                 bluetoothService.write(command);
             } else {
-                command = buildPOSTRequestCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_2);
-                sendPOSTRequest(settings.getIPAddress(), command);
+                sendPOSTRequest(settings.getIPAddress(), PillowBaseCommand.deflate, interval, PillowID.cushion_2);
             }
         });
 
@@ -321,30 +318,41 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
 
     }
 
-    private void sendPOSTRequest(String ip, String command) {
+    private void sendPOSTRequest(String ip, PillowBaseCommand command, int duration, PillowID pillowID) {
         // disableButtonControl();
 
         if (ip.isEmpty()) return;
 
+        String com = buildPOSTRequestCommand(command, duration, pillowID);
+
         serverStatusLabel.setText("Server: Trying to send command");
 
-        String address = "http://" + ip + ":4433/motorcontrol";
+        String address = "http://" + ip + ":3000/motorcontrol";
         Log.d("TESTING", "Trying: " + address);
 
         POSTRequestTask postRequestTask = new POSTRequestTask();
         postRequestTask.delegate = this;
-        postRequestTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, address, command);
+        postRequestTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, address, com);
     }
 
-    private String buildPOSTRequestCommand(PillowBaseCommand base, String baseParameter, PillowID pillowID) {
-        //example: base = inflate, baseParameter = 5 (secs) ,  pillowID  = cushion_1
-        //expected format = "command=inflate%20cushion_1%206"
+    private void stopAllPOST(String ip) {
+        String address = "http://" + ip + ":3000/stop";
+        Log.d("TESTING", "Trying: " + address);
+
+        POSTRequestTask postRequestTask = new POSTRequestTask();
+        postRequestTask.delegate = this;
+        postRequestTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, address, "stop");
+    }
+
+    private String buildPOSTRequestCommand(PillowBaseCommand base, int baseParameter, PillowID pillowID) {
 
         String ret = "{\n" +
                 "    \"motors\" : [\n" +
-                "        {\"motor\": " + (base == PillowBaseCommand.inflate ? pillowID.inflate : pillowID.deflate) + ", \"time\": " + baseParameter + "},\n" +
+                "        {\"motor\": " + (base == PillowBaseCommand.inflate ? pillowID.inflate : pillowID.deflate) + ", \"time\": " + baseParameter + "}\n" +
                 "    ]\n" +
                 "}";
+
+        Log.d("SENDING REQUEST::", ret);
         return ret;
     }
 
@@ -359,7 +367,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
 
         serverStatusLabel.setText("Server: Trying to Connect");
 
-        String address1 = "http://" + ip + ":4433/server_connection_test"; //external
+        String address1 = "http://" + ip + ":3000/healthcheck"; //external
         Log.d("TESTING", "Trying: " + address1);
 
         //must initialize new instance of task
