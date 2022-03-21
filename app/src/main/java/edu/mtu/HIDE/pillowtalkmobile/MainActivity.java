@@ -31,6 +31,19 @@ import java.util.List;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements TestServerConnectionAsyncResponse, POSTRequestAsyncResponse {
+    public enum PillowID {
+        cushion_1(1, 2),
+        cushion_2(3, 4);
+
+        int inflate;
+        int deflate;
+
+        private PillowID(int inflate, int deflate)
+        {
+            this.inflate = inflate;
+            this.deflate = deflate;
+        }
+    }
 
     private static final String BLUETOOTH_DEVICE = "raspberrypi";
     private static final UUID PILLOWTALK_UUID = UUID.fromString("79bf39f7-54a4-4015-b27e-0b4be44b506d");
@@ -315,7 +328,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
 
         serverStatusLabel.setText("Server: Trying to send command");
 
-        String address = "http://" + ip + ":4433/command";
+        String address = "http://" + ip + ":4433/motorcontrol";
         Log.d("TESTING", "Trying: " + address);
 
         POSTRequestTask postRequestTask = new POSTRequestTask();
@@ -327,7 +340,12 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         //example: base = inflate, baseParameter = 5 (secs) ,  pillowID  = cushion_1
         //expected format = "command=inflate%20cushion_1%206"
 
-        return "command=" + base + "%20" + pillowID + "%20" + baseParameter;
+        String ret = "{\n" +
+                "    \"motors\" : [\n" +
+                "        {\"motor\": " + (base == PillowBaseCommand.inflate ? pillowID.inflate : pillowID.deflate) + ", \"time\": " + baseParameter + "},\n" +
+                "    ]\n" +
+                "}";
+        return ret;
     }
 
     private String buildBluetoothCommand(PillowBaseCommand base, String baseParameter, PillowID pillowID) {
