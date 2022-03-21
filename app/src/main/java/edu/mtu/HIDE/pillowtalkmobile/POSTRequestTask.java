@@ -23,16 +23,6 @@ public class POSTRequestTask extends AsyncTask<String, Integer, String> {
         {
             URL url = new URL(postData[0]);
             String command = postData[1];
-            if (command.equals("stop")) {
-                HttpURLConnection http = (HttpURLConnection)url.openConnection();
-                http.setRequestMethod("POST");
-                http.setConnectTimeout(5000);
-
-                return http.getResponseCode() + " " + http.getResponseMessage();
-            }
-
-            // 141.219.123.159
-            //URL url = new URL("http://47.6.26.69:443/command");
 
             HttpURLConnection http = (HttpURLConnection)url.openConnection();
             http.setRequestMethod("POST");
@@ -40,7 +30,6 @@ public class POSTRequestTask extends AsyncTask<String, Integer, String> {
             http.setConnectTimeout(5000);
             http.setRequestProperty("Content-Type", "application/json");
 
-            //String data = "command=inflate%20cushion_1%206";
             byte[] out = command.getBytes(StandardCharsets.UTF_8);
 
             OutputStream stream = http.getOutputStream();

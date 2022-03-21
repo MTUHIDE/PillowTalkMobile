@@ -1,9 +1,7 @@
 package edu.mtu.HIDE.pillowtalkmobile;
 
 import android.bluetooth.BluetoothDevice;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
@@ -13,12 +11,10 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -26,9 +22,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import edu.mtu.HIDE.pillowtalkmobile.R.id;
 
 public class MainActivity extends AppCompatActivity implements TestServerConnectionAsyncResponse, POSTRequestAsyncResponse {
     public enum PillowID {
@@ -65,12 +62,8 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
     private Button pillow1DeflateButton;
     private Button pillow2InflateButton;
     private Button pillow2DeflateButton;
-    private RadioButton pillow1PresetLow;
-    private RadioButton pillow1PresetMedium;
-    private RadioButton pillow1PresetHigh;
-    private RadioButton pillow2PresetLow;
-    private RadioButton pillow2PresetMedium;
-    private RadioButton pillow2PresetHigh;
+    private RadioGroup pillow1PresetSelection;
+    private RadioGroup pillow2PresetSelection;
     private ImageButton openSettingsButton;
     private UserSettings settings;
 
@@ -86,8 +79,8 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         bluetoothService = new BluetoothService(this, PILLOWTALK_UUID);
 
         //initialize UI references
-        serverStatusLabel = findViewById(R.id.network_status_label);
-        bluetoothStatusLabel = findViewById(R.id.bluetooth_status_label);
+        serverStatusLabel = findViewById(id.network_status_label);
+        bluetoothStatusLabel = findViewById(id.bluetooth_status_label);
 
         pillow_1_label = findViewById(R.id.pillow_1_label);
         pillow_2_label = findViewById(R.id.pillow_2_label);
@@ -95,25 +88,21 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         pillow_1_label.setText(settings.getPillow1Nickname());
         pillow_2_label.setText(settings.getPillow2Nickname());
 
-        final Switch bluetoothSwitch = findViewById(R.id.use_bluetooth_switch);
+        final Switch bluetoothSwitch = findViewById(id.use_bluetooth_switch);
 
-        final EditText serverIPEditText = findViewById(R.id.server_ip_text);
+        final EditText serverIPEditText = findViewById(id.server_ip_text);
 
-        pillow1InflateButton = findViewById(R.id.pillow_1_button_increase);
-        pillow1DeflateButton = findViewById(R.id.pillow_1_button_decrease);
-        pillow2InflateButton = findViewById(R.id.pillow_2_button_increase);
-        pillow2DeflateButton = findViewById(R.id.pillow_2_button_decrease);
+        pillow1InflateButton = findViewById(id.pillow_1_button_increase);
+        pillow1DeflateButton = findViewById(id.pillow_1_button_decrease);
+        pillow2InflateButton = findViewById(id.pillow_2_button_increase);
+        pillow2DeflateButton = findViewById(id.pillow_2_button_decrease);
 
-        pillow1PresetLow = findViewById(R.id.pillow_1_preset_low);
-        pillow1PresetMedium = findViewById(R.id.pillow_1_preset_medium);
-        pillow1PresetHigh = findViewById(R.id.pillow_1_preset_high);
-        pillow2PresetLow = findViewById(R.id.pillow_2_preset_low);
-        pillow2PresetMedium = findViewById(R.id.pillow_2_preset_medium);
-        pillow2PresetHigh = findViewById(R.id.pillow_2_preset_high);
+        pillow1PresetSelection = findViewById(id.pillow_1_preset_selection);
+        pillow2PresetSelection = findViewById(id.pillow_2_preset_selection);
 
-        openSettingsButton = findViewById(R.id.floatingSettingsButton);
+        openSettingsButton = findViewById(id.floatingSettingsButton);
 
-        stopAllButton = findViewById(R.id.stop_all_button);
+        stopAllButton = findViewById(id.stop_all_button);
 
         settings.setUseBluetooth(false);// BAD FIX
         bluetoothSwitch.setChecked(settings.getUseBluetooth());
@@ -155,81 +144,13 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
             }
         });
 
-        pillow1InflateButton.setOnClickListener(view -> {
-            int interval = 0;
-            if (pillow1PresetLow.isChecked()) {
-                interval = settings.getPillow1LowPressureInterval();
-            } else if (pillow1PresetMedium.isChecked()) {
-                interval = settings.getPillow1MediumPressureInterval();
-            } else if (pillow1PresetHigh.isChecked()) {
-                interval = settings.getPillow1HighPressureInterval();
-            }
+        pillow1InflateButton.setOnClickListener(view -> sendCommand(PillowBaseCommand.inflate, setInterval(PillowID.cushion_1), PillowID.cushion_1));
 
-            String command;
-            if (settings.getUseBluetooth()) {
-                command = buildBluetoothCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_1);
-                bluetoothService.write(command);
-            } else {
-                sendPOSTRequest(settings.getIPAddress(), PillowBaseCommand.inflate, interval, PillowID.cushion_1);
-            }
-        });
+        pillow1DeflateButton.setOnClickListener(view -> sendCommand(PillowBaseCommand.deflate, setInterval(PillowID.cushion_1), PillowID.cushion_1));
 
-        pillow1DeflateButton.setOnClickListener(view -> {
-            int interval = 0;
-            if (pillow1PresetLow.isChecked()) {
-                interval = settings.getPillow1LowPressureInterval();
-            } else if (pillow1PresetMedium.isChecked()) {
-                interval = settings.getPillow1MediumPressureInterval();
-            } else if (pillow1PresetHigh.isChecked()) {
-                interval = settings.getPillow1HighPressureInterval();
-            }
+        pillow2InflateButton.setOnClickListener(view -> sendCommand(PillowBaseCommand.inflate, setInterval(PillowID.cushion_1), PillowID.cushion_2));
 
-            String command;
-            if (settings.getUseBluetooth()) {
-                command = buildBluetoothCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_1);
-                bluetoothService.write(command);
-            } else {
-                sendPOSTRequest(settings.getIPAddress(), PillowBaseCommand.deflate, interval, PillowID.cushion_1);
-            }
-        });
-
-        pillow2InflateButton.setOnClickListener(view -> {
-            int interval = 0;
-            if (pillow2PresetLow.isChecked()) {
-                interval = settings.getPillow2LowPressureInterval();
-            } else if (pillow2PresetMedium.isChecked()) {
-                interval = settings.getPillow2MediumPressureInterval();
-            } else if (pillow2PresetHigh.isChecked()) {
-                interval = settings.getPillow2HighPressureInterval();
-            }
-
-            String command;
-            if (settings.getUseBluetooth()) {
-                command = buildBluetoothCommand(PillowBaseCommand.inflate, interval + "", PillowID.cushion_2);
-                bluetoothService.write(command);
-            } else {
-                sendPOSTRequest(settings.getIPAddress(), PillowBaseCommand.inflate, interval, PillowID.cushion_2);
-            }
-        });
-
-        pillow2DeflateButton.setOnClickListener(view -> {
-            int interval = 0;
-            if (pillow2PresetLow.isChecked()) {
-                interval = settings.getPillow2LowPressureInterval();
-            } else if (pillow2PresetMedium.isChecked()) {
-                interval = settings.getPillow2MediumPressureInterval();
-            } else if (pillow2PresetHigh.isChecked()) {
-                interval = settings.getPillow2HighPressureInterval();
-            }
-
-            String command;
-            if (settings.getUseBluetooth()) {
-                command = buildBluetoothCommand(PillowBaseCommand.deflate, interval + "", PillowID.cushion_2);
-                bluetoothService.write(command);
-            } else {
-                sendPOSTRequest(settings.getIPAddress(), PillowBaseCommand.deflate, interval, PillowID.cushion_2);
-            }
-        });
+        pillow2DeflateButton.setOnClickListener(view -> sendCommand(PillowBaseCommand.deflate, setInterval(PillowID.cushion_1), PillowID.cushion_2));
 
         //Add UI listeners
         bluetoothSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -303,6 +224,38 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         testHttpsServerConnectivity(settings.getIPAddress());
     }
 
+    private int setInterval(PillowID pillowID) {
+        // selects the first pillow radio group or the second pillow radio group based on pillow id
+        RadioGroup selection; // = (pillowID == PillowID.cushion_1 ? pillow1PresetSelection : pillow2PresetSelection);
+
+        //
+        if (pillowID == PillowID.cushion_1) {
+            selection = pillow1PresetSelection;
+            switch (selection.getCheckedRadioButtonId()) {
+                case id.pillow_1_preset_low:
+                    return settings.getPillow1LowPressureInterval();
+                case id.pillow_1_preset_medium:
+                    return settings.getPillow1MediumPressureInterval();
+                case id.pillow_1_preset_high:
+                    return settings.getPillow1HighPressureInterval();
+                default:
+                    return 0;
+            }
+        } else {
+            selection = pillow2PresetSelection;
+            switch (selection.getCheckedRadioButtonId()) {
+                case id.pillow_2_preset_low:
+                    return settings.getPillow2LowPressureInterval();
+                case id.pillow_2_preset_medium:
+                    return settings.getPillow2MediumPressureInterval();
+                case id.pillow_2_preset_high:
+                    return settings.getPillow2HighPressureInterval();
+                default:
+                    return 0;
+            }
+        }
+    }
+
     private void openSettings(View view, UserSettings settings) {
         Intent settingsIntent = new Intent(this, SettingsActivity.class);
         startActivityForResult(settingsIntent, 0);
@@ -318,9 +271,15 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
 
     }
 
-    private void sendPOSTRequest(String ip, PillowBaseCommand command, int duration, PillowID pillowID) {
-        // disableButtonControl();
+    private void sendCommand(PillowBaseCommand command, int interval, PillowID id) {
+        if (settings.getUseBluetooth()) {
+            sendBluetoothCommand(command, interval, id);
+        } else {
+            sendPOSTRequest(settings.getIPAddress(), command, interval, id);
+        }
+    }
 
+    private void sendPOSTRequest(String ip, PillowBaseCommand command, int duration, PillowID pillowID) {
         if (ip.isEmpty()) return;
 
         String com = buildPOSTRequestCommand(command, duration, pillowID);
@@ -339,9 +298,13 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         String address = "http://" + ip + ":3000/stop";
         Log.d("TESTING", "Trying: " + address);
 
+        String com = "{\n" +
+                "    \"motors\" : []\n" +
+                "}";
+
         POSTRequestTask postRequestTask = new POSTRequestTask();
         postRequestTask.delegate = this;
-        postRequestTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, address, "stop");
+        postRequestTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, address, com);
     }
 
     private String buildPOSTRequestCommand(PillowBaseCommand base, int baseParameter, PillowID pillowID) {
@@ -356,8 +319,9 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         return ret;
     }
 
-    private String buildBluetoothCommand(PillowBaseCommand base, String baseParameter, PillowID pillowID) {
-        return base + " " + pillowID + " " + baseParameter;
+    private void sendBluetoothCommand(PillowBaseCommand command, int duration, PillowID pillowID) {
+        String str = command + " " + pillowID + " " + duration;
+        bluetoothService.write(str);
     }
 
     private void testHttpsServerConnectivity(String ip) {
@@ -382,12 +346,8 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         pillow2InflateButton.setEnabled(true);
         pillow2DeflateButton.setEnabled(true);
 
-        pillow1PresetLow.setEnabled(true);
-        pillow1PresetMedium.setEnabled(true);
-        pillow1PresetHigh.setEnabled(true);
-        pillow2PresetLow.setEnabled(true);
-        pillow2PresetMedium.setEnabled(true);
-        pillow2PresetHigh.setEnabled(true);
+        pillow1PresetSelection.setEnabled(true);
+        pillow2PresetSelection.setEnabled(true);
 
         stopAllButton.setEnabled(true);
     }
@@ -398,12 +358,8 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
         pillow2InflateButton.setEnabled(false);
         pillow2DeflateButton.setEnabled(false);
 
-        pillow1PresetLow.setEnabled(false);
-        pillow1PresetMedium.setEnabled(false);
-        pillow1PresetHigh.setEnabled(false);
-        pillow2PresetLow.setEnabled(false);
-        pillow2PresetMedium.setEnabled(false);
-        pillow2PresetHigh.setEnabled(false);
+        pillow1PresetSelection.setEnabled(false);
+        pillow2PresetSelection.setEnabled(false);
 
         stopAllButton.setEnabled(false);
     }
