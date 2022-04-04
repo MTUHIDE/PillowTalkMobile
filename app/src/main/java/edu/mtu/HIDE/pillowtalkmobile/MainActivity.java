@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
 
         stopAllButton.setOnClickListener(view -> {
             if (bluetoothSwitch.isChecked()) {
-                bluetoothService.write("STOP_ALL");
+                bluetoothService.write("{\"motors\" : []}");
             } else {
                 stopAllPOST(settings.getIPAddress());
             }
@@ -295,7 +295,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
     }
 
     private void stopAllPOST(String ip) {
-        String address = "http://" + ip + ":3000/stop";
+        String address = "http://" + ip + ":3000/motorcontrol";
         Log.d("TESTING", "Trying: " + address);
 
         String com = "{\n" +
@@ -309,10 +309,10 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
 
     private String buildPOSTRequestCommand(PillowBaseCommand base, int baseParameter, PillowID pillowID) {
 
-        String ret = "{\n" +
-                "    \"motors\" : [\n" +
-                "        {\"motor\": " + (base == PillowBaseCommand.inflate ? pillowID.inflate : pillowID.deflate) + ", \"time\": " + baseParameter + "}\n" +
-                "    ]\n" +
+        String ret = "{" +
+                "    \"motors\" : [" +
+                "        {\"motor\": " + (base == PillowBaseCommand.inflate ? pillowID.inflate : pillowID.deflate) + ", \"time\": " + baseParameter + "}" +
+                "    ]" +
                 "}";
 
         Log.d("SENDING REQUEST::", ret);
@@ -320,7 +320,7 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
     }
 
     private void sendBluetoothCommand(PillowBaseCommand command, int duration, PillowID pillowID) {
-        String str = command + " " + pillowID + " " + duration;
+        String str = buildPOSTRequestCommand(command, duration, pillowID);
         bluetoothService.write(str);
     }
 
