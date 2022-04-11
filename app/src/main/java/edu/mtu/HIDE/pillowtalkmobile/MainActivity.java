@@ -148,9 +148,9 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
 
         pillow1DeflateButton.setOnClickListener(view -> sendCommand(PillowBaseCommand.deflate, setInterval(PillowID.cushion_1), PillowID.cushion_1));
 
-        pillow2InflateButton.setOnClickListener(view -> sendCommand(PillowBaseCommand.inflate, setInterval(PillowID.cushion_1), PillowID.cushion_2));
+        pillow2InflateButton.setOnClickListener(view -> sendCommand(PillowBaseCommand.inflate, setInterval(PillowID.cushion_2), PillowID.cushion_2));
 
-        pillow2DeflateButton.setOnClickListener(view -> sendCommand(PillowBaseCommand.deflate, setInterval(PillowID.cushion_1), PillowID.cushion_2));
+        pillow2DeflateButton.setOnClickListener(view -> sendCommand(PillowBaseCommand.deflate, setInterval(PillowID.cushion_2), PillowID.cushion_2));
 
         //Add UI listeners
         bluetoothSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -348,6 +348,11 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
 
         pillow1PresetSelection.setEnabled(true);
         pillow2PresetSelection.setEnabled(true);
+        for (int i = 0; i< pillow1PresetSelection.getChildCount(); i++)
+            pillow1PresetSelection.getChildAt(i).setEnabled(true);
+
+        for (int i = 0; i< pillow2PresetSelection.getChildCount(); i++)
+            pillow2PresetSelection.getChildAt(i).setEnabled(true);
 
         stopAllButton.setEnabled(true);
     }
@@ -360,6 +365,11 @@ public class MainActivity extends AppCompatActivity implements TestServerConnect
 
         pillow1PresetSelection.setEnabled(false);
         pillow2PresetSelection.setEnabled(false);
+        for (int i = 0; i< pillow1PresetSelection.getChildCount(); i++)
+            pillow1PresetSelection.getChildAt(i).setEnabled(false);
+
+        for (int i = 0; i< pillow2PresetSelection.getChildCount(); i++)
+            pillow2PresetSelection.getChildAt(i).setEnabled(false);
 
         stopAllButton.setEnabled(false);
     }
